@@ -38,12 +38,12 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
       </div>
 
       {/* 问题文本 */}
-      <h2 className="mb-2 text-center text-2xl font-bold text-foreground">
+      <h2 className="mb-2 text-center text-2xl font-bold text-white">
         {question.text}
       </h2>
       
       {question.subtext && (
-        <p className="mb-6 text-center text-muted-foreground">
+        <p className="mb-6 text-center text-white/70">
           {question.subtext}
         </p>
       )}

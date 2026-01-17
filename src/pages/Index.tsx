@@ -13,6 +13,7 @@ import { DataCard } from "@/components/report/DataCard";
 import { ResultReaction } from "@/components/report/ResultReaction";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
+import { MidQuestionTaunt, shouldShowTaunt } from "@/components/survey/MidQuestionTaunt";
 import { ChevronLeft, ChevronRight, RotateCcw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { easterEggMessages } from "@/lib/questions";
@@ -26,6 +27,8 @@ const Index = () => {
   const [camp, setCamp] = useState<Camp>(null);
   const [retestCount, setRetestCount] = useState(0);
   const [showReaction, setShowReaction] = useState(true);
+  const [showTaunt, setShowTaunt] = useState(false);
+  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
   const survey = useSurvey();
 
   // 如果已完成，直接显示结果 - 必须在所有条件判断之前
@@ -182,9 +185,58 @@ const Index = () => {
 
   // 问卷页面
   if (appState === "survey") {
+    const handleAnswer = (answer: string) => {
+      const nextQuestionIndex = survey.currentQuestionIndex + 1;
+      
+      // 检查是否需要显示挑衅弹窗
+      if (shouldShowTaunt(nextQuestionIndex, survey.totalQuestions)) {
+        setPendingAnswer(answer);
+        setShowTaunt(true);
+        return;
+      }
+      
+      // 正常提交答案
+      survey.answerQuestion(answer);
+      if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
+        setAppState("loading");
+      }
+    };
+
+    const handleTauntContinue = () => {
+      setShowTaunt(false);
+      if (pendingAnswer) {
+        survey.answerQuestion(pendingAnswer);
+        setPendingAnswer(null);
+        if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
+          setAppState("loading");
+        }
+      }
+    };
+
+    const handleTauntQuit = () => {
+      setShowTaunt(false);
+      setPendingAnswer(null);
+      // 返回上一题或首页
+      if (survey.currentQuestionIndex > 0) {
+        survey.goBack();
+      } else {
+        setAppState("home");
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         <FloatingElements />
+        
+        {/* 中途挑衅弹窗 */}
+        {showTaunt && (
+          <MidQuestionTaunt
+            questionNumber={survey.currentQuestionIndex + 1}
+            totalQuestions={survey.totalQuestions}
+            onContinue={handleTauntContinue}
+            onQuit={handleTauntQuit}
+          />
+        )}
         
         <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
           {/* 进度条和返回 */}
@@ -211,13 +263,7 @@ const Index = () => {
             {survey.currentQuestion && (
               <QuestionCard
                 question={survey.currentQuestion}
-                onAnswer={(answer) => {
-                  survey.answerQuestion(answer);
-                  // 如果是最后一题，进入加载状态
-                  if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
-                    setAppState("loading");
-                  }
-                }}
+                onAnswer={handleAnswer}
                 questionNumber={survey.currentQuestionIndex + 1}
                 totalQuestions={survey.totalQuestions}
               />

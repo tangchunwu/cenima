@@ -54,7 +54,7 @@ export function ParticipantCounter({ className }: ParticipantCounterProps) {
 
   return (
     <div className={cn(
-      "inline-flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-sm px-4 py-2 shadow-cartoon-sm",
+      "inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-2 border border-white/20",
       className
     )}>
       <span className="relative flex h-2 w-2">
@@ -62,10 +62,10 @@ export function ParticipantCounter({ className }: ParticipantCounterProps) {
         <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
       </span>
       {isLoading ? (
-        <span className="text-sm text-muted-foreground">加载中...</span>
+        <span className="text-sm text-white/60">加载中...</span>
       ) : (
-        <span className="text-sm font-medium">
-          已有 <span className="font-bold text-primary">{formattedCount}</span> 人参与
+        <span className="text-sm font-medium text-white/80">
+          已有 <span className="font-bold text-primary">{formattedCount}</span> 人发现了真实的自己
         </span>
       )}
     </div>

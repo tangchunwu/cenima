@@ -1,6 +1,6 @@
 import { TagResult } from '@/lib/resultCalculator';
 import { ReportCard } from './ReportCard';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
 
 interface CoverCardProps {
   result: TagResult;
@@ -8,26 +8,26 @@ interface CoverCardProps {
 
 export const CoverCard = ({ result }: CoverCardProps) => {
   return (
-    <ReportCard className="text-center">
+    <ReportCard className="text-center bg-gradient-to-br from-slate-800/90 via-purple-900/90 to-slate-800/90 border-2 border-primary/30">
       <div className="space-y-6">
-        {/* 顶部装饰 */}
-        <div className="flex justify-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-          <span className="text-sm font-medium text-primary">2025年度报告</span>
-          <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+        {/* 顶部标签 */}
+        <div className="inline-flex items-center gap-2 bg-red-500/20 px-4 py-1 rounded-full border border-red-500/30">
+          <Zap className="w-4 h-4 text-red-400" />
+          <span className="text-sm font-bold text-red-400">2025年度人设揭晓</span>
         </div>
 
-        {/* 主要emoji */}
-        <div className="text-8xl animate-bounce-slow">{result.emoji}</div>
+        {/* 主要emoji - 更大更醒目 */}
+        <div className="relative">
+          <div className="text-9xl animate-bounce-slow">{result.emoji}</div>
+          <div className="absolute inset-0 text-9xl animate-ping opacity-30">{result.emoji}</div>
+        </div>
 
-        {/* 标题 */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">
-            你的2025年度人设
-          </h1>
-          <p className={`text-4xl font-bold bg-gradient-to-r ${result.color} bg-clip-text text-transparent`}>
+        {/* 主标签 - 霓虹效果 */}
+        <div className="space-y-3">
+          <p className={`text-5xl font-black bg-gradient-to-r ${result.color} bg-clip-text text-transparent animate-glow-text`}>
             {result.mainTag}
           </p>
+          <p className="text-white/60 text-sm">你的2025年度人设</p>
         </div>
 
         {/* 副标签 */}
@@ -35,26 +35,29 @@ export const CoverCard = ({ result }: CoverCardProps) => {
           {result.subTags.map((tag, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-secondary/50 rounded-full text-sm text-secondary-foreground"
+              className="px-4 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-sm text-white/80 border border-white/20"
             >
               #{tag}
             </span>
           ))}
         </div>
 
+        {/* 年度关键词 */}
+        <div className="bg-primary/20 rounded-xl px-4 py-3 border border-primary/30">
+          <p className="text-xs text-primary/80 mb-1">2025年度关键词</p>
+          <p className="text-primary font-bold text-lg">{result.keyword2025}</p>
+        </div>
+
         {/* 描述 */}
-        <p className="text-muted-foreground text-lg leading-relaxed px-4">
+        <p className="text-white/70 text-base leading-relaxed px-2">
           {result.description}
         </p>
 
-        {/* 底部装饰 */}
-        <div className="flex justify-center gap-3 pt-4">
-          <span className="text-2xl animate-float">🌟</span>
-          <span className="text-xl animate-float" style={{ animationDelay: '0.3s' }}>✨</span>
-          <span className="text-2xl animate-float" style={{ animationDelay: '0.6s' }}>💫</span>
+        {/* 底部提示 */}
+        <div className="flex items-center justify-center gap-2 text-white/40 text-xs pt-2">
+          <span>向左滑动查看更多</span>
+          <span>→</span>
         </div>
-
-        <p className="text-xs text-muted-foreground/60">向左滑动查看更多 →</p>
       </div>
     </ReportCard>
   );

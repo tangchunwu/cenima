@@ -19,6 +19,13 @@ const Index = () => {
   const [reportCardIndex, setReportCardIndex] = useState(0);
   const survey = useSurvey();
 
+  // 如果已完成，直接显示结果 - 必须在所有条件判断之前
+  useEffect(() => {
+    if (survey.result && !survey.isLoading) {
+      setAppState("result");
+    }
+  }, [survey.result, survey.isLoading]);
+
   // 初始加载状态
   if (survey.isLoading) {
     return (
@@ -27,13 +34,6 @@ const Index = () => {
       </div>
     );
   }
-
-  // 如果已完成，直接显示结果
-  useEffect(() => {
-    if (survey.result && !survey.isLoading) {
-      setAppState("result");
-    }
-  }, [survey.result, survey.isLoading]);
 
   // 首页
   if (appState === "home") {

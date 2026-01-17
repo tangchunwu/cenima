@@ -1,34 +1,44 @@
-import { ReportCard } from "./ReportCard";
+import { ReportCard } from './ReportCard';
 
 interface WishCardProps {
-  expectation: string;
+  content: string;
 }
 
-export function WishCard({ expectation }: WishCardProps) {
+export const WishCard = ({ content }: WishCardProps) => {
   return (
-    <ReportCard variant="gradient" className="relative overflow-hidden">
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-4 text-6xl animate-sparkle">🌟</div>
-        
-        <p className="mb-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-          2025最期待的事
-        </p>
-        
-        <div className="relative mb-6 rounded-2xl bg-sunshine/20 p-6">
-          <p className="text-lg font-medium text-foreground">
-            {expectation}
+    <ReportCard className="text-center">
+      <div className="space-y-6">
+        {/* 标题 */}
+        <div className="space-y-2">
+          <div className="text-5xl animate-bounce-slow">🌠</div>
+          <h2 className="text-2xl font-bold text-foreground">2026年的期待</h2>
+          <p className="text-sm text-muted-foreground">许个愿，让它成真</p>
+        </div>
+
+        {/* 内容区域 */}
+        <div className="bg-gradient-to-br from-primary/10 to-coral/10 rounded-2xl p-6 border-2 border-primary/20">
+          <p className="text-lg text-foreground leading-relaxed">
+            🌟 {content}
           </p>
         </div>
-        
-        <div className="space-y-2 text-center">
-          <p className="text-xl font-bold text-primary">
-            愿望一定会实现的 ✨
+
+        {/* 祝福语 */}
+        <div className="space-y-2">
+          <p className="text-primary font-bold text-lg">
+            愿望已被宇宙收到 ✨
           </p>
-          <p className="text-sm text-muted-foreground">
-            2025，我们一起加油！
+          <p className="text-muted-foreground text-sm">
+            2026年，一切都会实现的
           </p>
+        </div>
+
+        {/* 底部装饰 */}
+        <div className="flex justify-center gap-3">
+          <span className="text-xl animate-sparkle">⭐</span>
+          <span className="text-2xl animate-sparkle" style={{ animationDelay: '0.2s' }}>🌙</span>
+          <span className="text-xl animate-sparkle" style={{ animationDelay: '0.4s' }}>💫</span>
         </div>
       </div>
     </ReportCard>
   );
-}
+};

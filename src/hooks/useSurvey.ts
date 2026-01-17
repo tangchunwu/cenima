@@ -1,23 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/sessionUtils";
-import { questions, totalQuestions } from "@/lib/questions";
-import { calculateResult } from "@/lib/resultCalculator";
+import { questions, totalQuestions, Question } from "@/lib/questions";
+import { calculateResult, Answers, TagResult } from "@/lib/resultCalculator";
 
 export interface SurveyState {
   currentQuestionIndex: number;
-  answers: { [key: string]: string | string[] };
-  openAnswers: { regret: string; expectation: string; goals: string[] };
+  answers: Answers;
+  openAnswers: Record<string, string>;
   isComplete: boolean;
   isLoading: boolean;
-  result: ReturnType<typeof calculateResult> | null;
+  result: TagResult | null;
 }
 
 export function useSurvey() {
   const [state, setState] = useState<SurveyState>({
     currentQuestionIndex: 0,
     answers: {},
-    openAnswers: { regret: '', expectation: '', goals: [] },
+    openAnswers: {},
     isComplete: false,
     isLoading: true,
     result: null,
@@ -25,7 +25,7 @@ export function useSurvey() {
 
   const sessionId = getSessionId();
   const currentQuestion = questions[state.currentQuestionIndex];
-  const progress = state.currentQuestionIndex;
+  const progress = state.currentQuestionIndex + 1;
 
   // 加载已保存的进度
   useEffect(() => {
@@ -37,8 +37,8 @@ export function useSurvey() {
         .maybeSingle();
 
       if (data && !error) {
-        const answers = (data.answers as { [key: string]: string | string[] }) || {};
-        const openAnswers = (data.open_answers as { regret: string; expectation: string; goals: string[] }) || { regret: '', expectation: '', goals: [] };
+        const answers = (data.answers as Answers) || {};
+        const openAnswers = (data.open_answers as Record<string, string>) || {};
         
         if (data.completed) {
           const result = calculateResult(answers);
@@ -51,8 +51,7 @@ export function useSurvey() {
             isLoading: false,
           }));
         } else {
-          // 恢复进度
-          const answeredCount = Object.keys(answers).length;
+          const answeredCount = Object.keys(answers).length + Object.keys(openAnswers).length;
           setState(prev => ({
             ...prev,
             answers,
@@ -62,16 +61,12 @@ export function useSurvey() {
           }));
         }
       } else {
-        // 创建新记录
         await supabase.from('survey_responses').insert({
           session_id: sessionId,
           answers: {},
-          open_answers: { regret: '', expectation: '', goals: [] },
+          open_answers: {},
         });
-        
-        // 增加参与人数
         await supabase.rpc('increment_participant_count');
-        
         setState(prev => ({ ...prev, isLoading: false }));
       }
     };
@@ -80,23 +75,20 @@ export function useSurvey() {
   }, [sessionId]);
 
   // 回答问题
-  const answerQuestion = useCallback(async (questionId: number, answer: string | string[]) => {
-    const newAnswers = { ...state.answers, [questionId]: answer };
+  const answerQuestion = useCallback(async (answer: string) => {
+    const question = questions[state.currentQuestionIndex];
+    let newAnswers = { ...state.answers };
     let newOpenAnswers = { ...state.openAnswers };
 
-    // 处理开放题答案
-    if (questionId === 23) {
-      newOpenAnswers.regret = answer as string;
-    } else if (questionId === 24) {
-      newOpenAnswers.expectation = answer as string;
-    } else if (questionId === 25) {
-      newOpenAnswers.goals = answer as string[];
+    if (question.type === 'open') {
+      newOpenAnswers[question.id] = answer;
+    } else {
+      newAnswers[question.id] = answer;
     }
 
     const isLastQuestion = state.currentQuestionIndex >= totalQuestions - 1;
 
     if (isLastQuestion) {
-      // 完成问卷
       const result = calculateResult(newAnswers);
       
       await supabase
@@ -118,7 +110,6 @@ export function useSurvey() {
         result,
       }));
     } else {
-      // 保存并继续
       await supabase
         .from('survey_responses')
         .update({
@@ -136,7 +127,6 @@ export function useSurvey() {
     }
   }, [state.answers, state.openAnswers, state.currentQuestionIndex, sessionId]);
 
-  // 返回上一题
   const goBack = useCallback(() => {
     if (state.currentQuestionIndex > 0) {
       setState(prev => ({
@@ -146,13 +136,12 @@ export function useSurvey() {
     }
   }, [state.currentQuestionIndex]);
 
-  // 重新开始
   const restart = useCallback(async () => {
     await supabase
       .from('survey_responses')
       .update({
         answers: {},
-        open_answers: { regret: '', expectation: '', goals: [] },
+        open_answers: {},
         completed: false,
         result_type: null,
         result_tags: [],
@@ -162,7 +151,7 @@ export function useSurvey() {
     setState({
       currentQuestionIndex: 0,
       answers: {},
-      openAnswers: { regret: '', expectation: '', goals: [] },
+      openAnswers: {},
       isComplete: false,
       isLoading: false,
       result: null,

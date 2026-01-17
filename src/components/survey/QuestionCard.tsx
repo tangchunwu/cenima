@@ -7,47 +7,31 @@ import { ChevronRight } from "lucide-react";
 
 interface QuestionCardProps {
   question: Question;
-  onAnswer: (questionId: number, answer: string | string[]) => void;
-  currentAnswer?: string | string[];
+  onAnswer: (answer: string) => void;
+  questionNumber: number;
+  totalQuestions: number;
 }
 
-export function QuestionCard({ question, onAnswer, currentAnswer }: QuestionCardProps) {
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    Array.isArray(currentAnswer) ? currentAnswer : []
-  );
-  const [textAnswer, setTextAnswer] = useState(
-    typeof currentAnswer === 'string' ? currentAnswer : ''
-  );
-  const [customGoal, setCustomGoal] = useState('');
+export function QuestionCard({ question, onAnswer, questionNumber, totalQuestions }: QuestionCardProps) {
+  const [textAnswer, setTextAnswer] = useState('');
 
   const handleChoiceClick = (optionId: string) => {
-    onAnswer(question.id, optionId);
-  };
-
-  const handleMultiSelect = (optionId: string) => {
-    const newSelected = selectedOptions.includes(optionId)
-      ? selectedOptions.filter(id => id !== optionId)
-      : [...selectedOptions, optionId];
-    setSelectedOptions(newSelected);
-  };
-
-  const handleMultiSubmit = () => {
-    const finalAnswer = customGoal 
-      ? [...selectedOptions, `custom:${customGoal}`]
-      : selectedOptions;
-    if (finalAnswer.length > 0) {
-      onAnswer(question.id, finalAnswer);
-    }
+    onAnswer(optionId);
   };
 
   const handleTextSubmit = () => {
     if (textAnswer.trim()) {
-      onAnswer(question.id, textAnswer.trim());
+      onAnswer(textAnswer.trim());
     }
   };
 
   return (
-    <div className="flex flex-col items-center animate-scale-up">
+    <div className="flex flex-col items-center animate-scale-up w-full max-w-md mx-auto">
+      {/* 问题编号 */}
+      <p className="text-sm text-muted-foreground mb-2">
+        {questionNumber} / {totalQuestions}
+      </p>
+
       {/* 问题Emoji */}
       <div className="mb-4 text-6xl animate-bounce-slow">
         {question.emoji}
@@ -66,7 +50,7 @@ export function QuestionCard({ question, onAnswer, currentAnswer }: QuestionCard
 
       {/* 选择题选项 */}
       {question.type === 'choice' && question.options && (
-        <div className="mt-4 flex w-full max-w-md flex-col gap-3">
+        <div className="mt-4 flex w-full flex-col gap-3">
           {question.options.map((option) => (
             <button
               key={option.id}
@@ -75,9 +59,7 @@ export function QuestionCard({ question, onAnswer, currentAnswer }: QuestionCard
                 "group flex items-center gap-4 rounded-2xl border-2 bg-card p-4 text-left transition-all duration-200",
                 "hover:border-primary hover:shadow-cartoon-sm hover:scale-[1.02]",
                 "active:scale-[0.98]",
-                currentAnswer === option.id
-                  ? "border-primary bg-primary/5 shadow-cartoon-sm"
-                  : "border-border"
+                "border-border"
               )}
             >
               <span className="text-3xl group-hover:animate-wiggle">
@@ -95,7 +77,7 @@ export function QuestionCard({ question, onAnswer, currentAnswer }: QuestionCard
 
       {/* 开放题 */}
       {question.type === 'open' && (
-        <div className="mt-4 w-full max-w-md">
+        <div className="mt-4 w-full">
           <Textarea
             value={textAnswer}
             onChange={(e) => setTextAnswer(e.target.value)}
@@ -108,45 +90,6 @@ export function QuestionCard({ question, onAnswer, currentAnswer }: QuestionCard
             className="mt-4 w-full rounded-2xl py-6 text-lg font-bold shadow-cartoon"
           >
             继续 <ChevronRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-      )}
-
-      {/* 多选题 */}
-      {question.type === 'multi' && question.options && (
-        <div className="mt-4 w-full max-w-md">
-          <div className="flex flex-wrap gap-2 mb-4">
-            {question.options.map((option) => (
-              <button
-                key={option.id}
-                onClick={() => handleMultiSelect(option.id)}
-                className={cn(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all",
-                  "border-2",
-                  selectedOptions.includes(option.id)
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card hover:border-primary/50"
-                )}
-              >
-                <span>{option.emoji}</span>
-                <span>{option.text}</span>
-              </button>
-            ))}
-          </div>
-          
-          <Textarea
-            value={customGoal}
-            onChange={(e) => setCustomGoal(e.target.value)}
-            placeholder={question.placeholder}
-            className="min-h-[80px] rounded-2xl border-2 text-base resize-none focus:border-primary mb-4"
-          />
-          
-          <Button
-            onClick={handleMultiSubmit}
-            disabled={selectedOptions.length === 0 && !customGoal.trim()}
-            className="w-full rounded-2xl py-6 text-lg font-bold shadow-cartoon"
-          >
-            完成 🎉
           </Button>
         </div>
       )}

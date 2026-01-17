@@ -1,27 +1,28 @@
-import { ReportCard } from "./ReportCard";
-import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import { TagResult } from '@/lib/resultCalculator';
+import { ReportCard } from './ReportCard';
+import { Share2, Copy, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ShareCardProps {
+  result: TagResult;
   sessionId: string;
-  mainTag: string;
 }
 
-export function ShareCard({ sessionId, mainTag }: ShareCardProps) {
+export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   const [copied, setCopied] = useState(false);
-  
-  const shareUrl = `${window.location.origin}?view=${sessionId}`;
 
-  const handleCopyLink = async () => {
+  const shareText = `🎊 我的2025年度人设是【${result.mainTag}】${result.emoji}\n\n${result.description}\n\n你也来测测？👇`;
+
+  const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareText);
       setCopied(true);
-      toast.success("链接已复制！");
+      toast.success('已复制到剪贴板！');
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("复制失败，请手动复制");
+    } catch (err) {
+      toast.error('复制失败，请手动复制');
     }
   };
 
@@ -30,62 +31,71 @@ export function ShareCard({ sessionId, mainTag }: ShareCardProps) {
       try {
         await navigator.share({
           title: '我的2025年度报告',
-          text: `我是「${mainTag}」，来看看你是什么类型？`,
-          url: shareUrl,
+          text: shareText,
         });
       } catch (err) {
         // 用户取消分享
       }
     } else {
-      handleCopyLink();
+      handleCopy();
     }
   };
 
   return (
-    <ReportCard variant="primary" className="relative overflow-hidden">
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-4 text-6xl">🎊</div>
-        
-        <h2 className="mb-2 text-2xl font-bold text-foreground">
-          恭喜完成测试！
-        </h2>
-        
-        <p className="mb-6 text-muted-foreground">
-          分享给朋友，看看他们是什么类型
-        </p>
-        
-        <div className="w-full space-y-3">
+    <ReportCard className="text-center">
+      <div className="space-y-6">
+        {/* 标题 */}
+        <div className="space-y-2">
+          <div className="text-5xl animate-bounce-slow">🎉</div>
+          <h2 className="text-2xl font-bold text-foreground">分享你的人设</h2>
+          <p className="text-muted-foreground">让朋友也来测测</p>
+        </div>
+
+        {/* 分享预览 */}
+        <div className="bg-secondary/30 rounded-2xl p-4 text-left">
+          <p className="text-sm text-foreground whitespace-pre-line">{shareText}</p>
+        </div>
+
+        {/* 分享按钮 */}
+        <div className="flex flex-col gap-3">
           <Button
             onClick={handleShare}
-            className="w-full rounded-2xl py-6 text-lg font-bold shadow-cartoon"
+            className="w-full bg-gradient-to-r from-primary to-coral text-white py-6 rounded-xl text-lg"
           >
-            <Share2 className="mr-2 h-5 w-5" />
+            <Share2 className="w-5 h-5 mr-2" />
             分享给朋友
           </Button>
           
           <Button
-            onClick={handleCopyLink}
             variant="outline"
-            className="w-full rounded-2xl py-6 text-lg font-medium"
+            onClick={handleCopy}
+            className="w-full py-6 rounded-xl text-lg"
           >
             {copied ? (
               <>
-                <Check className="mr-2 h-5 w-5 text-green-500" />
+                <Check className="w-5 h-5 mr-2 text-green-500" />
                 已复制
               </>
             ) : (
               <>
-                <Copy className="mr-2 h-5 w-5" />
-                复制链接
+                <Copy className="w-5 h-5 mr-2" />
+                复制文案
               </>
             )}
           </Button>
         </div>
-        
-        <p className="mt-6 text-xs text-muted-foreground">
-          邀请朋友做测试，查看他们的报告 💕
+
+        {/* 底部装饰 */}
+        <div className="flex justify-center gap-2 text-2xl">
+          <span className="animate-wiggle">🌸</span>
+          <span className="animate-wiggle" style={{ animationDelay: '0.2s' }}>✨</span>
+          <span className="animate-wiggle" style={{ animationDelay: '0.4s' }}>🎀</span>
+        </div>
+
+        <p className="text-xs text-muted-foreground/60">
+          2025年度报告 · 感谢参与
         </p>
       </div>
     </ReportCard>
   );
-}
+};

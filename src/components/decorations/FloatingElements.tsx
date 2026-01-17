@@ -1,37 +1,63 @@
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from 'react';
 
-interface FloatingElementsProps {
-  variant?: 'stars' | 'clouds' | 'mixed';
-  className?: string;
+interface FloatingItem {
+  id: number;
+  emoji: string;
+  left: number;
+  top: number;
+  animationDelay: number;
+  scale: number;
+  duration: number;
 }
 
-export function FloatingElements({ variant = 'mixed', className }: FloatingElementsProps) {
+export const FloatingElements = () => {
+  const [items, setItems] = useState<FloatingItem[]>([]);
+
+  useEffect(() => {
+    const emojis = ['⭐', '✨', '🌸', '💫', '🎀', '🌙', '💖', '🌈', '☁️', '🦋', '🍀', '🎊'];
+    const newItems: FloatingItem[] = [];
+
+    for (let i = 0; i < 20; i++) {
+      newItems.push({
+        id: i,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        animationDelay: Math.random() * 5,
+        scale: 0.6 + Math.random() * 0.8,
+        duration: 3 + Math.random() * 4,
+      });
+    }
+
+    setItems(newItems);
+  }, []);
+
   return (
-    <div className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
-      {/* 星星 */}
-      {(variant === 'stars' || variant === 'mixed') && (
-        <>
-          <span className="absolute left-[10%] top-[15%] text-2xl animate-float opacity-60">⭐</span>
-          <span className="absolute right-[15%] top-[20%] text-xl animate-float-delayed opacity-50">✨</span>
-          <span className="absolute left-[20%] bottom-[25%] text-lg animate-sparkle opacity-40">🌟</span>
-          <span className="absolute right-[10%] bottom-[15%] text-2xl animate-float opacity-50">⭐</span>
-          <span className="absolute left-[50%] top-[10%] text-sm animate-sparkle opacity-30">✨</span>
-        </>
-      )}
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="absolute animate-float opacity-40"
+          style={{
+            left: `${item.left}%`,
+            top: `${item.top}%`,
+            animationDelay: `${item.animationDelay}s`,
+            animationDuration: `${item.duration}s`,
+            transform: `scale(${item.scale})`,
+            fontSize: `${1.2 + item.scale * 0.8}rem`,
+          }}
+        >
+          {item.emoji}
+        </div>
+      ))}
       
-      {/* 云朵 */}
-      {(variant === 'clouds' || variant === 'mixed') && (
-        <>
-          <span className="absolute left-[5%] top-[30%] text-4xl animate-float opacity-30">☁️</span>
-          <span className="absolute right-[5%] top-[40%] text-3xl animate-float-delayed opacity-25">☁️</span>
-          <span className="absolute left-[70%] bottom-[30%] text-5xl animate-float opacity-20">☁️</span>
-        </>
-      )}
-      
-      {/* 装饰性圆点 */}
-      <div className="absolute left-[15%] top-[60%] h-3 w-3 rounded-full bg-primary/20 animate-bounce-slow" />
-      <div className="absolute right-[20%] top-[70%] h-2 w-2 rounded-full bg-accent/30 animate-bounce-slow" />
-      <div className="absolute left-[80%] top-[25%] h-4 w-4 rounded-full bg-sunshine/40 animate-pulse-soft" />
+      {/* 额外的大装饰元素 */}
+      <div className="absolute top-10 left-10 text-4xl animate-float opacity-30" style={{ animationDelay: '0s' }}>🌟</div>
+      <div className="absolute top-20 right-16 text-3xl animate-float opacity-25" style={{ animationDelay: '1s' }}>🎀</div>
+      <div className="absolute bottom-32 left-20 text-3xl animate-float opacity-30" style={{ animationDelay: '2s' }}>💫</div>
+      <div className="absolute bottom-20 right-10 text-4xl animate-float opacity-25" style={{ animationDelay: '0.5s' }}>🌸</div>
+      <div className="absolute top-1/3 left-5 text-2xl animate-wiggle opacity-30" style={{ animationDelay: '1.5s' }}>✨</div>
+      <div className="absolute top-1/2 right-8 text-2xl animate-wiggle opacity-25" style={{ animationDelay: '2.5s' }}>🦋</div>
     </div>
   );
-}
+};

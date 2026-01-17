@@ -1,20 +1,18 @@
 import { ReportCard } from "./ReportCard";
+import { TagResult } from "@/lib/resultCalculator";
 import { cn } from "@/lib/utils";
 
 interface TagCardProps {
-  mainTag: string;
-  subTags: string[];
-  description: string;
-  emoji: string;
+  result: TagResult;
 }
 
-export function TagCard({ mainTag, subTags, description, emoji }: TagCardProps) {
+export function TagCard({ result }: TagCardProps) {
   return (
-    <ReportCard variant="primary" className="relative overflow-hidden">
+    <ReportCard className="relative overflow-hidden">
       <div className="flex flex-col items-center text-center">
         {/* 主Emoji */}
         <div className="mb-4 text-7xl animate-float">
-          {emoji}
+          {result.emoji}
         </div>
         
         {/* 你的标签 */}
@@ -23,13 +21,13 @@ export function TagCard({ mainTag, subTags, description, emoji }: TagCardProps) 
         </p>
         
         {/* 主标签 */}
-        <h2 className="mb-4 text-3xl font-black text-primary">
-          {mainTag}
+        <h2 className={`mb-4 text-3xl font-black bg-gradient-to-r ${result.color} bg-clip-text text-transparent`}>
+          {result.mainTag}
         </h2>
         
         {/* 副标签 */}
         <div className="mb-6 flex flex-wrap justify-center gap-2">
-          {subTags.map((tag, index) => (
+          {result.subTags.map((tag, index) => (
             <span
               key={index}
               className={cn(
@@ -39,14 +37,14 @@ export function TagCard({ mainTag, subTags, description, emoji }: TagCardProps) 
                 index === 2 && "bg-sunshine/30 text-foreground",
               )}
             >
-              {tag}
+              #{tag}
             </span>
           ))}
         </div>
         
         {/* 描述 */}
         <p className="text-base text-muted-foreground leading-relaxed">
-          {description}
+          {result.description}
         </p>
       </div>
     </ReportCard>

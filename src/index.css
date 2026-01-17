@@ -47,6 +47,8 @@
     --mint: 160 50% 75%;
     --peach: 25 90% 80%;
     --sky: 200 90% 80%;
+    --coral: 15 85% 65%;
+    --cream: 45 60% 94%;
 
     /* 渐变 */
     --gradient-warm: linear-gradient(135deg, hsl(350, 85%, 65%), hsl(25, 90%, 70%));
@@ -82,6 +84,9 @@
     --border: 240 15% 25%;
     --input: 240 15% 25%;
     --ring: 350 85% 70%;
+    
+    --coral: 15 85% 60%;
+    --cream: 45 20% 20%;
   }
 }
 
@@ -138,6 +143,10 @@
 
   .animate-sparkle {
     animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 
   /* 渐变背景 */
@@ -203,5 +212,14 @@
   50% {
     opacity: 0.7;
     transform: scale(1.1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 0 40px hsl(var(--primary) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.3);
   }
 }

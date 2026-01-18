@@ -13,11 +13,11 @@ interface ResultReactionProps {
 }
 
 const retestTaunts = [
-  '不信结果？行，再测一次',
-  '又来？看来上次结果触及灵魂了 😏',
-  '你已经第3次重测了...结果可能还是一样的',
-  '执着！但AI不会说谎的 🔮',
-  '再测100次结果也不会变的~',
+  '嘿嘿，大多数人第一次都这么说 😏',
+  '又来？看来上次结果触及灵魂了？👀',
+  '你已经是今天第233个不服的人了 😂',
+  '看吧，系统早就看穿了一切 🔮',
+  '再测100次结果也不会变的，洗洗睡吧 💤',
 ];
 
 export const ResultReaction = ({ result, camp, retestCount, onAccept, onRetest }: ResultReactionProps) => {
@@ -74,7 +74,7 @@ export const ResultReaction = ({ result, camp, retestCount, onAccept, onRetest }
             </span> 的
           </p>
           <p className="text-2xl font-bold text-white">{result.mainTag}</p>
-          
+
           {/* 阵营战况 */}
           <div className="mt-3 pt-3 border-t border-white/10">
             <div className="flex items-center justify-between text-xs">

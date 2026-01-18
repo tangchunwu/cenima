@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface QuestionCardProps {
   question: Question;
@@ -14,9 +15,42 @@ interface QuestionCardProps {
 
 export function QuestionCard({ question, onAnswer, questionNumber, totalQuestions }: QuestionCardProps) {
   const [textAnswer, setTextAnswer] = useState('');
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  const { toast } = useToast();
 
   const handleChoiceClick = (optionId: string) => {
-    onAnswer(optionId);
+    // 立即设置选中状态，提供视觉反馈
+    setSelectedOption(optionId);
+
+    // 趣味反馈逻辑
+    if (question.id === 'social_1' && optionId === 'c') {
+      toast({
+        title: "🛏️ 宅家党+1",
+        description: "看来你是真的不想动啊...",
+        className: "bg-primary/20 border-primary/50 text-white",
+      });
+    }
+    if (question.id === 'stress_1' && optionId === 'c') {
+      toast({
+        title: "⚠️ 肝帝出没",
+        description: "头发还好吗？",
+        className: "bg-red-500/20 border-red-500/50 text-white",
+      });
+    }
+    if (question.id === 'social_2' && optionId === 'c') {
+      toast({
+        title: "💀 社恐认证",
+        description: "这很不像话，但很真实",
+        className: "bg-purple-500/20 border-purple-500/50 text-white",
+      });
+    }
+
+    // 短暂延迟后进入下一题，让用户看到选中效果
+    setTimeout(() => {
+      onAnswer(optionId);
+      setSelectedOption(null);
+    }, 300);
   };
 
   const handleTextSubmit = () => {
@@ -41,7 +75,7 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
       <h2 className="mb-2 text-center text-2xl font-bold text-white">
         {question.text}
       </h2>
-      
+
       {question.subtext && (
         <p className="mb-6 text-center text-white/70">
           {question.subtext}
@@ -55,11 +89,13 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
             <button
               key={option.id}
               onClick={() => handleChoiceClick(option.id)}
+              disabled={selectedOption !== null}
               className={cn(
                 "group flex items-center gap-4 rounded-2xl border-2 bg-card p-4 text-left transition-all duration-200",
-                "hover:border-primary hover:shadow-cartoon-sm hover:scale-[1.02]",
-                "active:scale-[0.98]",
-                "border-border"
+                selectedOption === option.id
+                  ? "border-primary bg-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.5)] scale-105"
+                  : "border-border hover:border-primary hover:shadow-cartoon-sm hover:scale-[1.02] active:scale-[0.98]",
+                selectedOption !== null && selectedOption !== option.id && "opacity-50"
               )}
             >
               <span className="text-3xl group-hover:animate-wiggle">

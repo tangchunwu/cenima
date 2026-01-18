@@ -19,6 +19,9 @@ export interface TagResult {
   prediction2026: string; // 2026预言
   emoji: string;
   color: string;
+  image: string; // 新增：人设形象图路径
+  rarity: 'SSR' | 'SR' | 'R' | 'N'; // 稀有度
+  populationPercentage: number; // 人群占比
 }
 
 // 计算各维度得分
@@ -33,7 +36,7 @@ export function calculateDimensionScores(answers: Answers): DimensionScores {
 
   questions.forEach((question) => {
     if (question.type !== 'choice' || !question.options) return;
-    
+
     const answer = answers[question.id];
     if (!answer) return;
 
@@ -46,20 +49,20 @@ export function calculateDimensionScores(answers: Answers): DimensionScores {
 
   // 计算平均分并归一化到 1-5
   const scores: DimensionScores = {
-    social: dimensionTotals.social.count > 0 
-      ? dimensionTotals.social.sum / dimensionTotals.social.count 
+    social: dimensionTotals.social.count > 0
+      ? dimensionTotals.social.sum / dimensionTotals.social.count
       : 3,
-    thinking: dimensionTotals.thinking.count > 0 
-      ? dimensionTotals.thinking.sum / dimensionTotals.thinking.count 
+    thinking: dimensionTotals.thinking.count > 0
+      ? dimensionTotals.thinking.sum / dimensionTotals.thinking.count
       : 3,
-    stress: dimensionTotals.stress.count > 0 
-      ? dimensionTotals.stress.sum / dimensionTotals.stress.count 
+    stress: dimensionTotals.stress.count > 0
+      ? dimensionTotals.stress.sum / dimensionTotals.stress.count
       : 3,
-    life: dimensionTotals.life.count > 0 
-      ? dimensionTotals.life.sum / dimensionTotals.life.count 
+    life: dimensionTotals.life.count > 0
+      ? dimensionTotals.life.sum / dimensionTotals.life.count
       : 3,
-    time: dimensionTotals.time.count > 0 
-      ? dimensionTotals.time.sum / dimensionTotals.time.count 
+    time: dimensionTotals.time.count > 0
+      ? dimensionTotals.time.sum / dimensionTotals.time.count
       : 3,
   };
 
@@ -85,6 +88,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：终于学会享受独处（大概吧）',
     emoji: '⚡',
     color: 'from-yellow-400 via-orange-500 to-red-500',
+    image: '/personas/social.png',
+    rarity: 'SSR',
+    populationPercentage: 1,
   },
   // 社交低 + 思维高 = 赛博隐士
   'social_low_thinking_high': {
@@ -96,6 +102,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：被迫营业一次（但表情管理依然到位）',
     emoji: '🌙',
     color: 'from-purple-500 via-indigo-500 to-blue-600',
+    image: '/personas/ghost.png',
+    rarity: 'SR',
+    populationPercentage: 5,
   },
   // 压力高 + 时间低 = 拖延症晚期
   'stress_high_time_low': {
@@ -107,6 +116,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：继续拖延（但你依然能活下来）',
     emoji: '🔥',
     color: 'from-red-500 via-orange-500 to-yellow-500',
+    image: '/personas/emo.png',
+    rarity: 'N',
+    populationPercentage: 40,
   },
   // 生活高 + 时间高 = YOLO星人
   'life_high_time_high': {
@@ -118,6 +130,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：开启一段新的冒险（钱包准备好了吗）',
     emoji: '🎪',
     color: 'from-pink-500 via-rose-500 to-red-500',
+    image: '/personas/tangping.png',
+    rarity: 'SR',
+    populationPercentage: 8,
   },
   // 思维高 + 压力低 = 人间清醒
   'thinking_high_stress_low': {
@@ -129,6 +144,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：继续当大家的情绪稳定器（辛苦了）',
     emoji: '🧊',
     color: 'from-cyan-400 via-teal-500 to-emerald-500',
+    image: '/personas/ghost.png',
+    rarity: 'SR',
+    populationPercentage: 12,
   },
   // 社交高 + 压力高 = 表面社牛
   'social_high_stress_high': {
@@ -140,6 +158,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：学会说"不"（真的，试试看）',
     emoji: '🎭',
     color: 'from-blue-500 via-purple-500 to-pink-500',
+    image: '/personas/social.png',
+    rarity: 'R',
+    populationPercentage: 25,
   },
   // 生活低 + 思维高 = 低调狠人
   'life_low_thinking_high': {
@@ -151,6 +172,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：突然发力让所有人震惊',
     emoji: '🦊',
     color: 'from-slate-500 via-zinc-600 to-neutral-700',
+    image: '/personas/juanwang.png',
+    rarity: 'SSR',
+    populationPercentage: 2,
   },
   // 时间高 + 社交低 = 卷王本王
   'time_high_social_low': {
@@ -162,6 +186,9 @@ const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：终于允许自己休息一天（也许）',
     emoji: '🏃',
     color: 'from-emerald-500 via-green-500 to-lime-500',
+    image: '/personas/juanwang.png',
+    rarity: 'R',
+    populationPercentage: 30,
   },
 };
 
@@ -184,9 +211,12 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
       prediction2026: '2026年可能会：认识更多奇奇怪怪的朋友',
       emoji: '🦋',
       color: 'from-yellow-400 via-amber-500 to-orange-500',
+      image: '/personas/social.png',
+      rarity: 'SSR',
+      populationPercentage: 3,
     };
   }
-  
+
   if (thinkingLevel === 'high') {
     return {
       mainTag: '思考者本者',
@@ -197,6 +227,9 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
       prediction2026: '2026年可能会：想通一些一直想不通的事',
       emoji: '🧠',
       color: 'from-blue-500 via-cyan-500 to-teal-500',
+      image: '/personas/emo.png',
+      rarity: 'SR',
+      populationPercentage: 10,
     };
   }
 
@@ -210,6 +243,9 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
       prediction2026: '2026年可能会：解锁更多让人羡慕的生活方式',
       emoji: '🎨',
       color: 'from-pink-500 via-purple-500 to-indigo-500',
+      image: '/personas/tangping.png',
+      rarity: 'SR',
+      populationPercentage: 15,
     };
   }
 
@@ -223,6 +259,9 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
       prediction2026: '2026年可能会：发现"无聊"其实也挺好的',
       emoji: '⏰',
       color: 'from-amber-500 via-yellow-500 to-lime-500',
+      image: '/personas/juanwang.png',
+      rarity: 'R',
+      populationPercentage: 20,
     };
   }
 
@@ -236,6 +275,9 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
       prediction2026: '2026年可能会：继续佛系（这也是一种能力）',
       emoji: '🍃',
       color: 'from-green-400 via-emerald-500 to-teal-500',
+      image: '/personas/tangping.png',
+      rarity: 'SSR',
+      populationPercentage: 4,
     };
   }
 
@@ -249,12 +291,15 @@ function generateDefaultTag(scores: DimensionScores): TagResult {
     prediction2026: '2026年可能会：继续让大家猜不透你',
     emoji: '🔮',
     color: 'from-indigo-500 via-purple-500 to-pink-500',
+    image: '/personas/ghost.png',
+    rarity: 'SSR',
+    populationPercentage: 1,
   };
 }
 
 export function calculateResult(answers: Answers): TagResult {
   const scores = calculateDimensionScores(answers);
-  
+
   // 尝试匹配预设组合
   const combinations = [
     { key: 'social_high_life_high', condition: getLevel(scores.social) === 'high' && getLevel(scores.life) === 'high' },

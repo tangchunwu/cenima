@@ -14,9 +14,11 @@ import { ResultReaction } from "@/components/report/ResultReaction";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
 import { MidQuestionTaunt, shouldShowTaunt } from "@/components/survey/MidQuestionTaunt";
-import { ChevronLeft, ChevronRight, RotateCcw, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { easterEggMessages } from "@/lib/questions";
+import { BackgroundEffect } from "@/components/decorations/BackgroundEffect";
+import { TitleCarousel } from "@/components/home/TitleCarousel";
 
 type AppState = "home" | "camp" | "survey" | "loading" | "result" | "reaction";
 
@@ -29,6 +31,11 @@ const Index = () => {
   const [showReaction, setShowReaction] = useState(true);
   const [showTaunt, setShowTaunt] = useState(false);
   const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
+
+  // 挑战相关 State
+  const [inviterInfo, setInviterInfo] = useState<{ name: string, camp: string } | null>(null);
+  const [hasStarted, setHasStarted] = useState(false); // 控制是否点击开始
+
   const survey = useSurvey();
 
   // 如果已完成，直接显示结果 - 必须在所有条件判断之前
@@ -39,15 +46,28 @@ const Index = () => {
     }
   }, [survey.result, survey.isLoading, showReaction]);
 
+  // 检查URL参数 (Battle Mode)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const inviter = params.get('inviter');
+    const camp = params.get('camp');
+
+    if (inviter && camp) {
+      setInviterInfo({ name: inviter, camp });
+      // 保持 hasStarted 为 false, 让用户看到挑战卡片
+    }
+  }, []);
+
   // 加载页面的动态文案
   useEffect(() => {
     if (appState === 'loading') {
       const messages = [
-        '正在偷偷分析你...',
-        '你的答案很有意思',
-        'AI正在疯狂计算中...',
+        '正在偷偷记录你的选择...',
+        '嗯，有点意思...',
+        '这个选择暴露了你...',
+        '系统正在疯狂分析中...',
+        '正在计算你的"含毒量"...',
         '生成专属人设中...',
-        '你可能会想截图的...',
       ];
       let index = 0;
       const interval = setInterval(() => {
@@ -67,87 +87,119 @@ const Index = () => {
     );
   }
 
+  const handleStart = () => {
+    setHasStarted(true);
+    setAppState("camp");
+  };
+
+  const handleReset = () => {
+    setSurvey(null);
+    setHasStarted(false);
+    setInviterInfo(null);
+    setAppState("home");
+    setReportCardIndex(0);
+    // 清除URL参数但不刷新页面
+    window.history.pushState({}, '', window.location.pathname);
+  };
+
   // 首页 - 挑衅式设计
   if (appState === "home") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
         <FloatingElements />
-        
-        {/* 霓虹光效背景 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-coral/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-mint/10 rounded-full blur-3xl" />
-        </div>
-        
+        <BackgroundEffect />
+
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen relative z-10">
-          {/* 顶部热度标签 - 挑衅版 */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-500/30 animate-pulse">
-            <span className="text-red-400 text-sm font-medium">🔥 警告：87%的人测完不敢承认结果</span>
-          </div>
-          
-          {/* 主要内容区域 */}
-          <div className="text-center space-y-8 animate-fade-in">
-            {/* 主标题 - 挑衅版 */}
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
-                <span className="block animate-slide-up">别不信</span>
-                <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary via-coral to-mint animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                  你的人设比你想的更毒 👀
-                </span>
-              </h1>
-              
-              {/* 副标题 - 更有冲击力 */}
-              <p className="text-xl md:text-2xl text-white/70 font-medium animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                12道题，<span className="text-primary font-bold">揭穿</span>你的2025真面目
-                <br />
-                <span className="text-sm text-white/50">（测完可能想删掉记录）</span>
-              </p>
-            </div>
-            
-            {/* 实时动态 */}
-            <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
-              <LiveUpdates />
-            </div>
-            
-            {/* 参与人数 */}
-            <div className="animate-fade-in" style={{ animationDelay: '0.55s' }}>
-              <ParticipantCounter />
-            </div>
-            
-            {/* 开始按钮 - 挑衅版 */}
-            <div className="pt-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-              <Button
-                onClick={() => setAppState("camp")}
-                size="lg"
-                className="group relative bg-gradient-to-r from-primary via-coral to-primary hover:from-primary/90 hover:via-coral/90 hover:to-primary/90 text-white px-12 py-8 text-2xl font-bold rounded-2xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 animate-glow"
-              >
-                <span className="flex items-center gap-3">
-                  <Zap className="w-6 h-6" />
-                  我不信，测一下
-                  <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Button>
-            </div>
-            
-            {/* 挑衅式社交证明 */}
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-              <div className="flex items-center justify-center gap-4 text-white/40 text-xs">
-                <span>🎯 准到可怕</span>
-                <span>•</span>
-                <span>💀 毒舌预警</span>
-                <span>•</span>
-                <span>😱 不敢让同事看到</span>
+
+          {/* 如果有挑战信息，显示挑战卡片 */}
+          {!hasStarted && inviterInfo ? (
+            <div className="flex-1 flex flex-col justify-center space-y-12 animate-fade-in relative w-full max-w-md">
+              <div className="bg-red-900/40 border-2 border-red-500/50 rounded-2xl p-6 text-center transform rotate-1 animate-pulse shadow-2xl">
+                <div className="text-6xl mb-4">⚔️</div>
+                <h2 className="text-3xl font-black text-white mb-2 leading-tight">
+                  {inviterInfo.name} <br />向你发起了挑战！
+                </h2>
+                <p className="text-white/80 mb-6 text-lg">
+                  Ta是 <span className="font-bold text-yellow-400 bg-black/20 px-2 py-1 rounded">{inviterInfo.camp}</span>
+                </p>
+                <p className="text-white/60 italic border-t border-white/10 pt-4">
+                  "敢不敢测测看我们是宿敌还是天生一对？"
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <Button
+                  size="lg"
+                  className="w-full text-xl font-black h-16 rounded-2xl bg-gradient-to-r from-red-600 to-orange-600 background-animate shadow-xl shadow-red-500/20 hover:scale-105 transition-all duration-300"
+                  onClick={handleStart}
+                >
+                  接受挑战
+                  <ArrowRight className="ml-2 w-6 h-6 animate-bounce-x" />
+                </Button>
+                <p className="text-center text-xs text-white/40">已有 1,203 对好友因此绝交</p>
               </div>
             </div>
-          </div>
-          
-          {/* 底部装饰 */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 opacity-60">
-            <span className="text-2xl animate-float">🔥</span>
-            <span className="text-3xl animate-float" style={{ animationDelay: '0.5s' }}>👀</span>
-            <span className="text-2xl animate-float" style={{ animationDelay: '1s' }}>⚡</span>
-          </div>
+          ) : (
+            /* 正常首页逻辑 */
+            <>
+              {/* 顶部热度标签 */}
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-500/30 animate-pulse w-max max-w-[90%]">
+                <span className="text-red-400 text-sm font-medium truncate">🔥 警告：87%的人测完不敢承认结果</span>
+              </div>
+
+              {/* 主要内容区域 */}
+              <div className="text-center space-y-8 animate-fade-in w-full max-w-md">
+                {/* 主标题 - 轮播挑衅版 */}
+                <TitleCarousel />
+
+                {/* 实时动态 */}
+                <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                  <LiveUpdates />
+                </div>
+
+                {/* 参与人数 */}
+                <div className="animate-fade-in" style={{ animationDelay: '0.55s' }}>
+                  <ParticipantCounter />
+                </div>
+
+                {/* 开始按钮 */}
+                <div className="pt-4 animate-fade-in flex flex-col items-center gap-3" style={{ animationDelay: '0.6s' }}>
+                  <Button
+                    onClick={handleStart}
+                    size="lg"
+                    className="group relative bg-gradient-to-r from-primary via-coral to-primary hover:from-primary/90 hover:via-coral/90 hover:to-primary/90 text-white px-12 py-8 text-2xl font-bold rounded-2xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 animate-glow w-full"
+                  >
+                    <span className="flex items-center justify-center gap-3">
+                      <Zap className="w-6 h-6" />
+                      我不信，测一下
+                      <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Button>
+                  <p className="text-xs text-red-400/80 font-bold bg-black/20 px-3 py-1 rounded-full border border-red-500/20 animate-pulse">
+                    ⚠️ 警告：测试可能引起不适，但很准
+                  </p>
+                </div>
+
+                {/* 挑衅式社交证明 */}
+                <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+                  <div className="flex items-center justify-center gap-4 text-white/40 text-xs">
+                    <span>🎯 准到可怕</span>
+                    <span>•</span>
+                    <span>💀 毒舌预警</span>
+                    <span>•</span>
+                    <span>😱 不敢让同事看到</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 底部装饰 */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 opacity-60">
+                <span className="text-2xl animate-float">🔥</span>
+                <span className="text-3xl animate-float" style={{ animationDelay: '0.5s' }}>👀</span>
+                <span className="text-2xl animate-float" style={{ animationDelay: '1s' }}>⚡</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
@@ -158,7 +210,7 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         <FloatingElements />
-        
+
         {/* 返回按钮 */}
         <button
           onClick={() => setAppState("home")}
@@ -166,7 +218,7 @@ const Index = () => {
         >
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
-        
+
         <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen relative z-10">
           <CampSelection
             onSelect={(selectedCamp) => {
@@ -187,14 +239,14 @@ const Index = () => {
   if (appState === "survey") {
     const handleAnswer = (answer: string) => {
       const nextQuestionIndex = survey.currentQuestionIndex + 1;
-      
+
       // 检查是否需要显示挑衅弹窗
       if (shouldShowTaunt(nextQuestionIndex, survey.totalQuestions)) {
         setPendingAnswer(answer);
         setShowTaunt(true);
         return;
       }
-      
+
       // 正常提交答案
       survey.answerQuestion(answer);
       if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
@@ -225,9 +277,9 @@ const Index = () => {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans">
         <FloatingElements />
-        
+
         {/* 中途挑衅弹窗 */}
         {showTaunt && (
           <MidQuestionTaunt
@@ -237,7 +289,7 @@ const Index = () => {
             onQuit={handleTauntQuit}
           />
         )}
-        
+
         <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
           {/* 进度条和返回 */}
           <div className="flex items-center gap-4 mb-6">
@@ -274,17 +326,15 @@ const Index = () => {
     );
   }
 
-  // 加载页面 - 更有趣的文案
+  // 加载页面
   if (appState === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
         <FloatingElements />
-        
-        {/* 动态光效 */}
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/30 rounded-full blur-3xl animate-pulse" />
         </div>
-        
+
         <div className="text-center space-y-6 animate-fade-in z-10">
           <div className="text-7xl animate-bounce-slow">🔮</div>
           <h2 className="text-2xl font-bold text-white">{loadingMessage || '正在生成你的人设...'}</h2>
@@ -299,22 +349,34 @@ const Index = () => {
     );
   }
 
-  // 反应页面 - 承认/不服选择
+  // 反应页面
   if (appState === "reaction" && survey.result) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
         <FloatingElements />
-        
-        {/* 动态光效 */}
         <div className="absolute inset-0">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl animate-pulse" />
         </div>
-        
+
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen relative z-10">
           {/* 结果展示 */}
           <div className="text-center space-y-6 mb-8 animate-fade-in">
             <p className="text-white/60">你的2025年度人设是...</p>
-            <div className="text-8xl animate-bounce-slow">{survey.result.emoji}</div>
+            {/* 结果展示 - 优先显示图片 */}
+            <div className="relative w-48 h-48 mx-auto animate-bounce-slow">
+              <div className={`absolute inset-0 bg-gradient-to-r ${survey.result.color} rounded-full blur-3xl opacity-20`} />
+              {survey.result.image ? (
+                <img
+                  src={survey.result.image}
+                  alt="Persona"
+                  className="w-full h-full object-contain relative z-10 drop-shadow-2xl"
+                />
+              ) : (
+                <div className="text-8xl flex items-center justify-center h-full relative z-10">
+                  {survey.result.emoji}
+                </div>
+              )}
+            </div>
             <h1 className={`text-5xl font-black bg-gradient-to-r ${survey.result.color} bg-clip-text text-transparent`}>
               {survey.result.mainTag}
             </h1>
@@ -352,7 +414,6 @@ const Index = () => {
       <DataCard key="data" result={survey.result} />,
     ];
 
-    // 添加开放题卡片
     const regretAnswer = survey.openAnswers?.['open_regret'];
     const wishAnswer = survey.openAnswers?.['open_wish'];
 
@@ -366,9 +427,9 @@ const Index = () => {
     reportCards.push(<ShareCard key="share" result={survey.result} sessionId={survey.sessionId} />);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
         <FloatingElements />
-        
+
         <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
           {/* 卡片指示器 */}
           <div className="flex justify-center gap-2 mb-4">
@@ -376,11 +437,10 @@ const Index = () => {
               <button
                 key={index}
                 onClick={() => setReportCardIndex(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === reportCardIndex 
-                    ? 'bg-primary w-8' 
-                    : 'bg-white/30 w-2 hover:bg-white/50'
-                }`}
+                className={`h-2 rounded-full transition-all duration-300 ${index === reportCardIndex
+                  ? 'bg-primary w-8'
+                  : 'bg-white/30 w-2 hover:bg-white/50'
+                  }`}
               />
             ))}
           </div>
@@ -413,15 +473,26 @@ const Index = () => {
             )}
           </div>
 
-          {/* 重测按钮 */}
-          <div className="flex justify-center py-4">
+          {/* 重测按钮 & 挑战结果提示 */}
+          <div className="flex flex-col items-center gap-4 py-4">
+            {/* 如果是挑战模式，显示挑战结果小贴士 */}
+            {inviterInfo && (
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center max-w-xs animate-pulse">
+                <p className="text-xs text-white/60 mb-1">本次挑战结果</p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-yellow-400 font-bold">{inviterInfo.camp}</span>
+                  <span className="text-xs">VS</span>
+                  <span className="text-primary font-bold">{survey.result.mainTag}</span>
+                </div>
+                <p className="text-xs text-white/40 mt-1">
+                  {inviterInfo.camp === survey.result.mainTag ? "居然是同类！" : "果然是宿敌！"}
+                </p>
+              </div>
+            )}
+
             <Button
               variant="ghost"
-              onClick={() => {
-                survey.restart();
-                setAppState("home");
-                setReportCardIndex(0);
-              }}
+              onClick={handleReset}
               className="text-white/60 hover:text-white hover:bg-white/10"
             >
               <RotateCcw className="w-4 h-4 mr-2" />

@@ -1,28 +1,31 @@
 import { TagResult } from '@/lib/resultCalculator';
 import { ReportCard } from './ReportCard';
-import { Share2, Copy, Check } from 'lucide-react';
+import { Share2, Copy, Check, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { PosterGenerator } from './PosterGenerator';
 
 interface ShareCardProps {
   result: TagResult;
   sessionId: string;
 }
 
-// 挑衅式分享文案
-const getShareTexts = (result: TagResult) => [
-  `我测出来是【${result.mainTag}】${result.emoji}，系统说这很准，我不信。你呢？`,
-  `⚠️ 高能预警：测完才知道2025年的自己有多"毒"\n\n我是【${result.mainTag}】，87%的人不敢发。你敢测吗？`,
-  `别笑，你的人设可能比我还毒 👀\n\n我测出来是【${result.mainTag}】${result.emoji}，${result.description.slice(0, 30)}...`,
-  `🔥 2025年度人设测试\n\n我：【${result.mainTag}】\n特征：${result.subTags.join('、')}\n\n不服？你来测测`,
-];
-
 export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   const [copied, setCopied] = useState(false);
   const [textIndex, setTextIndex] = useState(0);
-  
-  const shareTexts = getShareTexts(result);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateTrigger, setGenerateTrigger] = useState(false);
+
+  // 生成挑战链接
+  const battleLink = `${window.location.origin}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
+
+  const shareTexts = [
+    `🔥 2025年度人设测试\n\n我测出来是【${result.mainTag}】，稀有度${result.rarity}！\n据说这个结果只有${result.populationPercentage}%的人能测出来。\n\n敢不敢来battle一下？👉 ${battleLink}`,
+    `⚠️ 警告：这测试有点毒\n\n我的结果：${result.mainTag} (${result.rarity})\n系统说：${result.roast}\n\n测测它怎么骂你 👉 ${battleLink}`,
+    `🆘 破防了家人们\n\n我是【${result.mainTag}】，你的呢？\n不服来战 👉 ${battleLink}`,
+    `⚔️ 发起挑战\n\n我的人设战斗力：${result.rarity === 'SSR' ? '9999' : result.rarity === 'SR' ? '6666' : '2333'}\n来看看我们是队友还是对手 👉 ${battleLink}`,
+  ];
   const shareText = shareTexts[textIndex];
 
   const handleCopy = async () => {
@@ -51,32 +54,69 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
     }
   };
 
+  const handleGeneratePoster = () => {
+    setIsGenerating(true);
+    setGenerateTrigger(true);
+  };
+
+  const onPosterGenerated = (blob: Blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `shabi-report-${result.mainTag}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setIsGenerating(false);
+    setGenerateTrigger(false);
+    toast.success('海报保存成功！');
+  };
+
   return (
-    <ReportCard className="text-center">
+    <ReportCard className="text-center relative bg-slate-900/80 backdrop-blur-xl border-white/20">
+      {/* Hidden Generator */}
+      <PosterGenerator
+        result={result}
+        onGenerate={onPosterGenerated}
+        trigger={generateTrigger}
+      />
+
       <div className="space-y-6">
         {/* 挑衅式标题 */}
         <div className="space-y-2">
-          <div className="text-5xl animate-bounce-slow">😏</div>
+          <div className="w-24 h-24 mx-auto mb-4 relative">
+            <div className={`absolute inset-0 bg-gradient-to-r ${result.color} rounded-full blur-xl opacity-20`} />
+            {/* 如果有图片则显示图片，否则显示Emoji */}
+            {result.image ? (
+              <img src={result.image} alt="persona" className="w-full h-full object-contain relative z-10 animate-bounce-slow" />
+            ) : (
+              <div className="text-6xl animate-bounce-slow flex items-center justify-center h-full">{result.emoji}</div>
+            )}
+          </div>
           <h2 className="text-2xl font-bold text-white">敢发朋友圈吗？</h2>
           <p className="text-white/60">让朋友也来测测他们的"真面目"</p>
         </div>
 
         {/* 文案选择器 */}
-        <div className="flex justify-center gap-2">
-          {shareTexts.map((_, idx) => (
+        <div className="flex flex-wrap justify-center gap-2">
+          {['挑衅版', '悬念版', '自黑版', '对战版'].map((label, idx) => (
             <button
               key={idx}
               onClick={() => setTextIndex(idx)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                idx === textIndex ? 'bg-primary w-6' : 'bg-white/30 hover:bg-white/50'
-              }`}
-            />
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${idx === textIndex
+                ? 'bg-primary text-white shadow-lg scale-105'
+                : 'bg-white/10 text-white/60 hover:bg-white/20'
+                }`}
+            >
+              {label}
+            </button>
           ))}
         </div>
 
         {/* 分享预览 */}
-        <div className="bg-white/10 rounded-2xl p-4 text-left border border-white/10">
-          <p className="text-sm text-white/90 whitespace-pre-line">{shareText}</p>
+        <div className="bg-white/5 rounded-2xl p-4 text-left border border-white/10 hover:bg-white/10 transition-colors">
+          <p className="text-sm text-white/90 whitespace-pre-line break-all selection:bg-primary/30">{shareText}</p>
         </div>
 
         {/* 挑衅提示 */}
@@ -86,30 +126,49 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
           </p>
         </div>
 
-        {/* 分享按钮 */}
+        {/* 分享按钮组 */}
         <div className="flex flex-col gap-3">
           <Button
+            onClick={handleGeneratePoster}
+            disabled={isGenerating}
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-6 rounded-xl text-lg font-bold hover:scale-105 transition-transform shadow-lg shadow-purple-500/20"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                正在生成海报...
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5 mr-2" />
+                保存毒舌海报 (推荐)
+              </>
+            )}
+          </Button>
+
+          <Button
             onClick={handleShare}
-            className="w-full bg-gradient-to-r from-primary to-coral text-white py-6 rounded-xl text-lg font-bold hover:scale-105 transition-transform"
+            variant="outline"
+            className="w-full py-6 rounded-xl text-lg border-white/20 text-white hover:bg-white/10 hover:text-white"
           >
             <Share2 className="w-5 h-5 mr-2" />
             挑战朋友来测
           </Button>
-          
+
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={handleCopy}
-            className="w-full py-6 rounded-xl text-lg border-white/20 text-white hover:bg-white/10"
+            className="w-full py-4 text-white/60 hover:text-white"
           >
             {copied ? (
               <>
-                <Check className="w-5 h-5 mr-2 text-green-500" />
-                已复制，快去发！
+                <Check className="w-4 h-4 mr-2 text-green-500" />
+                已复制
               </>
             ) : (
               <>
-                <Copy className="w-5 h-5 mr-2" />
-                复制挑衅文案
+                <Copy className="w-4 h-4 mr-2" />
+                仅复制文案
               </>
             )}
           </Button>

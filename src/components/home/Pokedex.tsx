@@ -29,7 +29,7 @@ export const Pokedex = () => {
                             <Button
                                    variant="outline"
                                    size="icon"
-                                   className="fixed bottom-6 right-6 z-50 rounded-full w-14 h-14 bg-yellow-400 border-yellow-500 hover:bg-yellow-300 hover:scale-110 transition-all shadow-xl"
+                                   className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 rounded-full w-12 h-12 sm:w-14 sm:h-14 bg-yellow-400 border-yellow-500 hover:bg-yellow-300 hover:scale-110 transition-all shadow-xl"
                             >
                                    <div className="relative">
                                           <Banana className="w-8 h-8 text-yellow-900" />

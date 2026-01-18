@@ -48,7 +48,7 @@ export const Leaderboard = () => {
                             <Button
                                    variant="outline"
                                    size="icon"
-                                   className="fixed bottom-24 right-6 z-50 rounded-full w-12 h-12 bg-slate-800/90 border-slate-600 hover:bg-slate-700 hover:scale-110 transition-all shadow-xl backdrop-blur-sm"
+                                   className="fixed bottom-36 sm:bottom-24 right-4 sm:right-6 z-50 rounded-full w-10 h-10 sm:w-12 sm:h-12 bg-slate-800/90 border-slate-600 hover:bg-slate-700 hover:scale-110 transition-all shadow-xl backdrop-blur-sm"
                             >
                                    <Trophy className="w-6 h-6 text-yellow-500" />
                             </Button>
@@ -72,16 +72,16 @@ export const Leaderboard = () => {
                                                  <div
                                                         key={item.mainTag}
                                                         className={`relative flex items-center gap-4 p-3 rounded-xl border transition-all ${item.rank === 1 ? 'bg-yellow-500/10 border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]' :
-                                                                      item.rank === 2 ? 'bg-slate-400/10 border-slate-400/50' :
-                                                                             item.rank === 3 ? 'bg-orange-700/10 border-orange-700/50' :
-                                                                                    'bg-white/5 border-white/5'
+                                                               item.rank === 2 ? 'bg-slate-400/10 border-slate-400/50' :
+                                                                      item.rank === 3 ? 'bg-orange-700/10 border-orange-700/50' :
+                                                                             'bg-white/5 border-white/5'
                                                                }`}
                                                  >
                                                         {/* 排名 */}
                                                         <div className={`w-8 flex justify-center font-black italic text-lg ${item.rank === 1 ? 'text-yellow-500' :
-                                                                      item.rank === 2 ? 'text-slate-400' :
-                                                                             item.rank === 3 ? 'text-orange-600' :
-                                                                                    'text-white/20'
+                                                               item.rank === 2 ? 'text-slate-400' :
+                                                                      item.rank === 3 ? 'text-orange-600' :
+                                                                             'text-white/20'
                                                                }`}>
                                                                {item.rank <= 3 ? <Crown className="w-5 h-5" /> : item.rank}
                                                         </div>
@@ -100,8 +100,8 @@ export const Leaderboard = () => {
                                                                <div className="flex items-center gap-2">
                                                                       <h3 className="font-bold text-sm truncate">{item.mainTag}</h3>
                                                                       <span className={`text-[10px] px-1 rounded border ${item.rarity === 'SSR' ? 'text-yellow-500 border-yellow-500/30 bg-yellow-500/10' :
-                                                                                    item.rarity === 'SR' ? 'text-purple-500 border-purple-500/30 bg-purple-500/10' :
-                                                                                           'text-blue-500 border-blue-500/30 bg-blue-500/10'
+                                                                             item.rarity === 'SR' ? 'text-purple-500 border-purple-500/30 bg-purple-500/10' :
+                                                                                    'text-blue-500 border-blue-500/30 bg-blue-500/10'
                                                                              }`}>
                                                                              {item.rarity}
                                                                       </span>

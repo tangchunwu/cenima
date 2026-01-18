@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Question } from "@/lib/questions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,12 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const { toast } = useToast();
+
+  // 当题目变化时重置输入框内容
+  useEffect(() => {
+    setTextAnswer('');
+    setSelectedOption(null);
+  }, [question.id]);
 
   const handleChoiceClick = (optionId: string) => {
     // 立即设置选中状态，提供视觉反馈
@@ -50,7 +56,7 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
     setTimeout(() => {
       onAnswer(optionId);
       setSelectedOption(null);
-    }, 300);
+    }, 150);
   };
 
   const handleTextSubmit = () => {
@@ -101,7 +107,7 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
               <span className="text-3xl group-hover:animate-wiggle">
                 {option.emoji}
               </span>
-              <span className="flex-1 font-medium">{option.text}</span>
+              <span className="flex-1 font-medium text-slate-900">{option.text}</span>
               <ChevronRight className={cn(
                 "h-5 w-5 text-muted-foreground transition-transform",
                 "group-hover:translate-x-1 group-hover:text-primary"
@@ -118,7 +124,7 @@ export function QuestionCard({ question, onAnswer, questionNumber, totalQuestion
             value={textAnswer}
             onChange={(e) => setTextAnswer(e.target.value)}
             placeholder={question.placeholder}
-            className="min-h-[120px] rounded-2xl border-2 text-base resize-none focus:border-primary"
+            className="min-h-[120px] rounded-2xl border-2 text-base resize-none focus:border-primary text-slate-900 placeholder:text-slate-400"
           />
           <Button
             onClick={handleTextSubmit}

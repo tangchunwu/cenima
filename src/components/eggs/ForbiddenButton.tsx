@@ -37,12 +37,12 @@ export const ForbiddenButton = () => {
        };
 
        return (
-              <div className="fixed bottom-4 left-4 z-50 animate-pulse-slow group">
+              <div className="fixed bottom-20 sm:bottom-4 left-4 z-50 animate-pulse-slow group">
                      <Button
                             variant="destructive"
                             size="sm"
                             onClick={handleSelfDestruct}
-                            className="rounded-full w-10 h-10 p-0 bg-red-900/50 hover:bg-red-600 border border-red-500/30 overflow-hidden transition-all duration-300 group-hover:w-32 group-hover:justify-start"
+                            className="rounded-full w-10 h-10 p-0 bg-red-900/50 hover:bg-red-600 border border-red-500/30 overflow-hidden transition-all duration-300 sm:group-hover:w-32 sm:group-hover:justify-start"
                      >
                             <div className="w-10 h-10 flex items-center justify-center shrink-0">
                                    <AlertOctagon className="w-5 h-5 text-red-500 group-hover:text-white transition-colors" />

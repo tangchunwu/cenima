@@ -66,7 +66,7 @@ export const Leaderboard = () => {
                                    </DialogTitle>
                             </DialogHeader>
 
-                            <ScrollArea className="flex-1 -mx-6 px-6">
+                            <ScrollArea className="flex-1 -mx-6 px-6 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 150px)' }}>
                                    <div className="space-y-4 py-4">
                                           {items.map((item) => (
                                                  <div

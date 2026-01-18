@@ -186,7 +186,7 @@ export const tagCombinations: Record<string, TagResult> = {
     prediction2026: '2026年可能会：终于允许自己休息一天（也许）',
     emoji: '🏃',
     color: 'from-emerald-500 via-green-500 to-lime-500',
-    image: '/personas/juanwang.webp',
+    image: '/personas/runner.webp',
     rarity: 'R',
     populationPercentage: 30,
   },

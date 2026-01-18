@@ -1,14 +1,16 @@
 import { useRef, useEffect } from 'react';
 import { TagResult } from '@/lib/resultCalculator';
 import html2canvas from 'html2canvas';
+import { QRCodeCanvas } from 'qrcode.react';
 
 interface PosterGeneratorProps {
        result: TagResult;
        onGenerate: (blob: Blob) => void;
        trigger: boolean;
+       link: string;
 }
 
-export const PosterGenerator = ({ result, onGenerate, trigger }: PosterGeneratorProps) => {
+export const PosterGenerator = ({ result, onGenerate, trigger, link }: PosterGeneratorProps) => {
        const posterRef = useRef<HTMLDivElement>(null);
 
        useEffect(() => {
@@ -105,11 +107,15 @@ export const PosterGenerator = ({ result, onGenerate, trigger }: PosterGenerator
                                           <p className="text-white/60 text-xs font-bold">测测你有"多毒"</p>
                                    </div>
 
-                                   <div className="w-16 h-16 bg-white p-1 rounded-lg">
-                                          {/* Simple QR Code Placeholder or generate one */}
-                                          <div className="w-full h-full bg-black flex items-center justify-center">
-                                                 <span className="text-white text-[8px]">QR CODE</span>
-                                          </div>
+                                   <div className="bg-white p-1 rounded-lg">
+                                          <QRCodeCanvas
+                                                 value={link || window.location.href}
+                                                 size={60}
+                                                 bgColor={"#ffffff"}
+                                                 fgColor={"#000000"}
+                                                 level={"L"}
+                                                 includeMargin={false}
+                                          />
                                    </div>
                             </div>
 

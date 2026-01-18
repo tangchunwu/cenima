@@ -80,6 +80,7 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
         result={result}
         onGenerate={onPosterGenerated}
         trigger={generateTrigger}
+        link={battleLink}
       />
 
       <div className="space-y-6">

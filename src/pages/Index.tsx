@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useSurvey } from "@/hooks/useSurvey";
 import { FloatingElements } from "@/components/decorations/FloatingElements";
 import { ParticipantCounter } from "@/components/decorations/ParticipantCounter";
@@ -10,15 +10,26 @@ import { RegretCard } from "@/components/report/RegretCard";
 import { WishCard } from "@/components/report/WishCard";
 import { ShareCard } from "@/components/report/ShareCard";
 import { DataCard } from "@/components/report/DataCard";
-import { ResultReaction } from "@/components/report/ResultReaction";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
 import { MidQuestionTaunt, shouldShowTaunt } from "@/components/survey/MidQuestionTaunt";
-import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { easterEggMessages } from "@/lib/questions";
 import { BackgroundEffect } from "@/components/decorations/BackgroundEffect";
 import { TitleCarousel } from "@/components/home/TitleCarousel";
+import { useCollection } from "@/hooks/useCollection";
+import { toast } from "sonner";
+import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
+
+// Lazy Load Heavy Components
+const Pokedex = lazy(() => import("@/components/home/Pokedex").then(module => ({ default: module.Pokedex })));
+const Leaderboard = lazy(() => import("@/components/home/Leaderboard").then(module => ({ default: module.Leaderboard })));
+const BattleCard = lazy(() => import("@/components/report/BattleCard").then(module => ({ default: module.BattleCard })));
+const ResultReaction = lazy(() => import("@/components/report/ResultReaction").then(module => ({ default: module.ResultReaction })));
+const KonamiCode = lazy(() => import("@/components/eggs/KonamiCode").then(module => ({ default: module.KonamiCode })));
+const RageClick = lazy(() => import("@/components/eggs/RageClick").then(module => ({ default: module.RageClick })));
+const ForbiddenButton = lazy(() => import("@/components/eggs/ForbiddenButton").then(module => ({ default: module.ForbiddenButton })));
 
 type AppState = "home" | "camp" | "survey" | "loading" | "result" | "reaction";
 
@@ -37,12 +48,30 @@ const Index = () => {
   const [hasStarted, setHasStarted] = useState(false); // 控制是否点击开始
 
   const survey = useSurvey();
+  const { unlock } = useCollection();
 
   // 如果已完成，直接显示结果 - 必须在所有条件判断之前
   useEffect(() => {
     if (survey.result && !survey.isLoading) {
+      // 解锁图鉴
+      unlock(survey.result.mainTag);
+
+      // Track completion
+      trackEvent(AnalyticsEvents.SURVEY_COMPLETE, {
+        result: survey.result.mainTag,
+        camp: camp
+      });
+
       // 首次完成显示反应页面，重测后也显示
       setAppState(showReaction ? "reaction" : "result");
+
+      // Delay toast slightly to not conflict with transition
+      setTimeout(() => {
+        toast.success("解锁新图鉴！快去首页看看吧", {
+          icon: "🍌",
+          duration: 3000
+        });
+      }, 1000);
     }
   }, [survey.result, survey.isLoading, showReaction]);
 
@@ -93,7 +122,7 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setSurvey(null);
+    survey.restart();
     setHasStarted(false);
     setInviterInfo(null);
     setAppState("home");
@@ -108,6 +137,13 @@ const Index = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
         <FloatingElements />
         <BackgroundEffect />
+        <Suspense fallback={null}>
+          <Pokedex />
+          <Leaderboard />
+          <KonamiCode />
+          <RageClick />
+          <ForbiddenButton />
+        </Suspense>
 
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen relative z-10">
 
@@ -385,21 +421,23 @@ const Index = () => {
 
           {/* 反应组件 */}
           <div className="w-full max-w-md animate-fade-in" style={{ animationDelay: '0.5s' }}>
-            <ResultReaction
-              result={survey.result}
-              camp={camp}
-              retestCount={retestCount}
-              onAccept={() => {
-                setShowReaction(false);
-                setAppState("result");
-              }}
-              onRetest={() => {
-                setRetestCount(prev => prev + 1);
-                setShowReaction(true);
-                survey.restart();
-                setAppState("camp");
-              }}
-            />
+            <Suspense fallback={<div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin text-white/50" /></div>}>
+              <ResultReaction
+                result={survey.result}
+                camp={camp}
+                retestCount={retestCount}
+                onAccept={() => {
+                  setShowReaction(false);
+                  setAppState("result");
+                }}
+                onRetest={() => {
+                  setRetestCount(prev => prev + 1);
+                  setShowReaction(true);
+                  survey.restart();
+                  setAppState("camp");
+                }}
+              />
+            </Suspense>
           </div>
         </div>
       </div>
@@ -413,6 +451,15 @@ const Index = () => {
       <TagCard key="tag" result={survey.result} />,
       <DataCard key="data" result={survey.result} />,
     ];
+
+    // 如果是挑战模式，插入对战卡片到最前面
+    if (inviterInfo) {
+      reportCards.unshift(
+        <Suspense key="battle-suspense" fallback={<div className="h-96 w-full bg-black/20 animate-pulse rounded-xl" />}>
+          <BattleCard key="battle" result={survey.result} inviterInfo={inviterInfo} />
+        </Suspense>
+      );
+    }
 
     const regretAnswer = survey.openAnswers?.['open_regret'];
     const wishAnswer = survey.openAnswers?.['open_wish'];

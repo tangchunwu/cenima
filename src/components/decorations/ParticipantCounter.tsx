@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/runtimeClient";
 import { cn } from "@/lib/utils";
+
 
 interface ParticipantCounterProps {
   className?: string;

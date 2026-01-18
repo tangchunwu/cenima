@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/runtimeClient";
 import { getSessionId } from "@/lib/sessionUtils";
 import { questions, totalQuestions, Question } from "@/lib/questions";
 import { calculateResult, Answers, TagResult } from "@/lib/resultCalculator";
+
 
 export interface SurveyState {
   currentQuestionIndex: number;

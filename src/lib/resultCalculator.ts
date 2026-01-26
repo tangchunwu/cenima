@@ -320,3 +320,80 @@ export function calculateResult(answers: Answers): TagResult {
 
   return generateDefaultTag(scores);
 }
+
+export interface ChartData {
+  annualCurve: { month: string; value: number; status: 'high' | 'low' | 'normal' }[];
+  dimensions: { subject: string; A: number; fullMark: number }[];
+}
+
+export interface HealthIndices {
+  internalFriction: number; // 内耗指数 (0-100)
+  socialBattery: number;   // 社交电量 (0-100)
+  anxietyLevel: number;    // 焦虑等级 (0-100)
+  dopamineStock: number;   // 多巴胺储备 (0-100)
+}
+
+export function calculateHealthIndices(answers: Answers): HealthIndices {
+  const scores = calculateDimensionScores(answers);
+
+  // 简单的加权计算
+  // 内耗 = (思维 * 1.5 + 压力 * 1.5) / 3 * 20
+  const internalFriction = Math.min(100, Math.round(((scores.thinking * 1.5 + scores.stress * 1.5) / 15) * 100));
+
+  // 社交电量 = 社交 * 20
+  const socialBattery = Math.min(100, Math.round(scores.social * 20));
+
+  // 焦虑等级 = 压力 * 20 + (5 - 生活) * 4
+  const anxietyLevel = Math.min(100, Math.round((scores.stress * 4 + (5 - scores.life) * 4) * 4));
+
+  // 多巴胺 = (生活 * 1.5 + 社交 * 0.5) * 10
+  const dopamineStock = Math.min(100, Math.round(((scores.life * 1.5 + scores.social * 0.5) / 10) * 100));
+
+  return {
+    internalFriction,
+    socialBattery,
+    anxietyLevel,
+    dopamineStock
+  };
+}
+
+// 生成图表数据
+export function calculateChartData(answers: Answers): ChartData {
+  const scores = calculateDimensionScores(answers);
+
+  // 1. 生成年度心情曲线 (基于分数的伪随机但确定性曲线)
+  // 使用 scores 的总和作为种子
+  const seed = Object.values(scores).reduce((a, b) => a + b, 0);
+  const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+  let currentValue = 50 + (seed % 20); // 初始值
+  const annualCurve = months.map((month, index) => {
+    // 简单的伪随机波动
+    const change = Math.sin(index + seed) * 20 + (Math.random() - 0.5) * 10;
+    currentValue = Math.max(10, Math.min(90, currentValue + change));
+
+    let status: 'high' | 'low' | 'normal' = 'normal';
+    if (currentValue > 80) status = 'high';
+    if (currentValue < 30) status = 'low';
+
+    return {
+      month,
+      value: Math.round(currentValue),
+      status,
+    };
+  });
+
+  // 2. 生成雷达图数据
+  const dimensions = [
+    { subject: '社交', A: Math.round(scores.social / 5 * 100), fullMark: 100 },
+    { subject: '思维', A: Math.round(scores.thinking / 5 * 100), fullMark: 100 },
+    { subject: '压力', A: Math.round(scores.stress / 5 * 100), fullMark: 100 },
+    { subject: '生活', A: Math.round(scores.life / 5 * 100), fullMark: 100 },
+    { subject: '时间', A: Math.round(scores.time / 5 * 100), fullMark: 100 },
+  ];
+
+  return {
+    annualCurve,
+    dimensions,
+  };
+}

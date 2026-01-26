@@ -1,6 +1,6 @@
 import { ReportCard } from './ReportCard';
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, FileClock, Trash2 } from 'lucide-react';
 
 interface RegretCardProps {
   content: string;
@@ -10,67 +10,69 @@ export const RegretCard = ({ content }: RegretCardProps) => {
   const [isStrikedOut, setIsStrikedOut] = useState(false);
 
   return (
-    <ReportCard className="text-center bg-gradient-to-br from-slate-800/90 via-purple-900/90 to-slate-800/90 border-2 border-red-500/30">
-      <div className="space-y-6">
+    <ReportCard className="text-center bg-slate-100 text-slate-800 border-2 border-slate-300 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-slate-300" />
+
+      <div className="space-y-6 pt-4">
         {/* 标题 */}
-        <div className="space-y-2">
-          <div className="text-5xl animate-float">🥲</div>
-          <h2 className="text-2xl font-bold text-white">2025年的意难平</h2>
-          <p className="text-sm text-white/50">点击划掉它，让它过去</p>
+        <div className="flex flex-col items-center border-b border-slate-200 pb-4">
+          <div className="bg-slate-200 p-2 rounded-full mb-2">
+            <FileClock className="w-6 h-6 text-slate-500" />
+          </div>
+          <h2 className="text-xl font-black text-slate-700 uppercase tracking-tight">Past Medical History</h2>
+          <p className="text-xs text-slate-400 font-bold uppercase">Chronic Symptoms (2025)</p>
         </div>
 
         {/* 内容区域 - 可点击划掉 */}
-        <div 
-          className={`bg-red-500/10 border-2 border-red-500/20 rounded-2xl p-6 cursor-pointer transition-all duration-500 ${
-            isStrikedOut ? 'opacity-50' : 'hover:bg-red-500/20'
-          }`}
+        <div
+          className={`bg-white border-2 border-slate-200 rounded-xl p-6 cursor-pointer transition-all duration-500 relative ${isStrikedOut ? 'opacity-60 bg-slate-50' : 'hover:border-slate-300 shadow-sm'
+            }`}
           onClick={() => setIsStrikedOut(true)}
         >
-          <div className="relative">
-            <p className={`text-lg text-white/90 leading-relaxed italic transition-all duration-500 ${
-              isStrikedOut ? 'line-through decoration-red-500 decoration-2' : ''
-            }`}>
+          <div className="relative z-10">
+            <p className={`text-lg text-slate-700 font-serif italic leading-relaxed transition-all duration-500 ${isStrikedOut ? 'line-through decoration-red-500 decoration-4 text-slate-400 blur-[1px]' : ''
+              }`}>
               "{content}"
             </p>
             {isStrikedOut && (
-              <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
-                <X className="w-16 h-16 text-red-500/50" />
+              <div className="absolute inset-0 flex items-center justify-center animate-fade-in scale-125">
+                <div className="border-4 border-red-500 text-red-500 px-4 py-2 font-black text-2xl -rotate-12 rounded opacity-80 decoration-slice">
+                  RESOLVED
+                </div>
+              </div>
+            )}
+
+            {!isStrikedOut && (
+              <div className="absolute -bottom-3 -right-3">
+                <Trash2 className="w-4 h-4 text-slate-300" />
               </div>
             )}
           </div>
         </div>
 
         {/* 状态文案 */}
-        {isStrikedOut ? (
-          <div className="space-y-3 animate-fade-in">
-            <p className="text-mint font-bold text-lg">
-              ✅ 已释放！
+        <div className="bg-slate-200/50 rounded-lg p-3">
+          {isStrikedOut ? (
+            <div className="space-y-1 animate-fade-in">
+              <p className="text-emerald-600 font-bold text-sm">
+                ✓ SYMPTOM CLEARED
+              </p>
+              <p className="text-slate-500 text-xs">
+                Patient has successfully processed this trauma.
+              </p>
+            </div>
+          ) : (
+            <p className="text-slate-400 text-xs font-bold uppercase">
+              tap record to mark as resolved
             </p>
-            <p className="text-white/60">
-              过去的就让它过去吧
-            </p>
-          </div>
-        ) : (
-          <p className="text-white/50 text-sm">
-            👆 点击上方区域划掉它
-          </p>
-        )}
-
-        {/* 治愈文案 */}
-        <div className="space-y-2 pt-4">
-          <p className="text-white/70">
-            遗憾也是成长的一部分
-          </p>
-          <p className="text-primary font-bold">
-            2026年，轻装上阵 🚀
-          </p>
+          )}
         </div>
 
         {/* 底部装饰 */}
-        <div className="flex justify-center gap-3">
-          <span className="text-xl animate-float">🌸</span>
-          <span className="text-2xl animate-float" style={{ animationDelay: '0.3s' }}>💪</span>
-          <span className="text-xl animate-float" style={{ animationDelay: '0.6s' }}>🌈</span>
+        <div className="flex justify-center gap-3 opacity-30 grayscale">
+          <span className="text-xl">🖤</span>
+          <span className="text-xl">🥀</span>
+          <span className="text-xl">🍂</span>
         </div>
       </div>
     </ReportCard>

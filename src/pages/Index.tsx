@@ -1,3 +1,4 @@
+```
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useSurvey } from "@/hooks/useSurvey";
 import { FloatingElements } from "@/components/decorations/FloatingElements";
@@ -8,8 +9,30 @@ import { CoverCard } from "@/components/report/CoverCard";
 import { TagCard } from "@/components/report/TagCard";
 import { RegretCard } from "@/components/report/RegretCard";
 import { WishCard } from "@/components/report/WishCard";
+import { HealthScoreCard } from "@/components/report/HealthScoreCard";
 import { ShareCard } from "@/components/report/ShareCard";
 import { DataCard } from "@/components/report/DataCard";
+import { PrescriptionCard } from "@/components/report/PrescriptionCard";
+
+// ... (in Index component)
+    const reportCards = [
+      <CoverCard key="cover" result={survey.result} />,
+      <TagCard key="tag" result={survey.result} />,
+      <HealthScoreCard key="health" result={survey.result} indices={healthIndices} />,
+      <DataCard key="data" result={survey.result} answers={survey.answers} />,
+      <PrescriptionCard key="rx" result={survey.result} />,
+    ];
+import { calculateHealthIndices } from "@/lib/resultCalculator";
+
+// ... (in Index component)
+const healthIndices = calculateHealthIndices(survey.answers as any);
+
+const reportCards = [
+  <CoverCard key="cover" result={survey.result} />,
+  <TagCard key="tag" result={survey.result} />,
+  <HealthScoreCard key="health" result={survey.result} indices={healthIndices} />,
+  <DataCard key="data" result={survey.result} answers={survey.answers} />,
+];
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
 import { MidQuestionTaunt, shouldShowTaunt } from "@/components/survey/MidQuestionTaunt";
@@ -400,7 +423,7 @@ const Index = () => {
             <p className="text-white/60">你的2025年度人设是...</p>
             {/* 结果展示 - 优先显示图片 */}
             <div className="relative w-48 h-48 mx-auto animate-bounce-slow">
-              <div className={`absolute inset-0 bg-gradient-to-r ${survey.result.color} rounded-full blur-3xl opacity-20`} />
+              <div className={`absolute inset - 0 bg - gradient - to - r ${ survey.result.color } rounded - full blur - 3xl opacity - 20`} />
               {survey.result.image ? (
                 <img
                   src={survey.result.image}
@@ -413,7 +436,7 @@ const Index = () => {
                 </div>
               )}
             </div>
-            <h1 className={`text-5xl font-black bg-gradient-to-r ${survey.result.color} bg-clip-text text-transparent`}>
+            <h1 className={`text - 5xl font - black bg - gradient - to - r ${ survey.result.color } bg - clip - text text - transparent`}>
               {survey.result.mainTag}
             </h1>
             <p className="text-white/70 max-w-sm mx-auto">{survey.result.description}</p>
@@ -444,12 +467,15 @@ const Index = () => {
     );
   }
 
-  // 结果页面
   if (appState === "result" && survey.result) {
+    const healthIndices = calculateHealthIndices(survey.answers);
+
     const reportCards = [
       <CoverCard key="cover" result={survey.result} />,
       <TagCard key="tag" result={survey.result} />,
-      <DataCard key="data" result={survey.result} />,
+      <HealthScoreCard key="health" result={survey.result} indices={healthIndices} />,
+      <DataCard key="data" result={survey.result} answers={survey.answers} />,
+      <PrescriptionCard key="rx" result={survey.result} />,
     ];
 
     // 如果是挑战模式，插入对战卡片到最前面
@@ -484,10 +510,11 @@ const Index = () => {
               <button
                 key={index}
                 onClick={() => setReportCardIndex(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${index === reportCardIndex
-                  ? 'bg-primary w-8'
-                  : 'bg-white/30 w-2 hover:bg-white/50'
-                  }`}
+                className={`h - 2 rounded - full transition - all duration - 300 ${
+  index === reportCardIndex
+    ? 'bg-primary w-8'
+    : 'bg-white/30 w-2 hover:bg-white/50'
+} `}
               />
             ))}
           </div>

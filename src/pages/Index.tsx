@@ -2,8 +2,6 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { useSurvey } from "@/hooks/useSurvey";
 import { FloatingElements } from "@/components/decorations/FloatingElements";
 import { ParticipantCounter } from "@/components/decorations/ParticipantCounter";
-import { ProgressBar } from "@/components/survey/ProgressBar";
-import { QuestionCard } from "@/components/survey/QuestionCard";
 import { CoverCard } from "@/components/report/CoverCard";
 import { TagCard } from "@/components/report/TagCard";
 import { RegretCard } from "@/components/report/RegretCard";
@@ -15,15 +13,19 @@ import { PrescriptionCard } from "@/components/report/PrescriptionCard";
 import { calculateHealthIndices } from "@/lib/resultCalculator";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
-import { MidQuestionTaunt, shouldShowTaunt } from "@/components/survey/MidQuestionTaunt";
 import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { easterEggMessages } from "@/lib/questions";
 import { BackgroundEffect } from "@/components/decorations/BackgroundEffect";
 import { TitleCarousel } from "@/components/home/TitleCarousel";
 import { useCollection } from "@/hooks/useCollection";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
+
+// Game Mode Components
+import { LifeEditor } from "@/components/game/LifeEditor";
+import { MemoryCleaner } from "@/components/game/MemoryCleaner";
+import { SystemBootLoader } from "@/components/game/SystemBootLoader";
+import { GameAttributes } from "@/lib/gameResultMapper";
 
 // Lazy Load Heavy Components
 const Pokedex = lazy(() => import("@/components/home/Pokedex").then(module => ({ default: module.Pokedex })));
@@ -34,7 +36,7 @@ const KonamiCode = lazy(() => import("@/components/eggs/KonamiCode").then(module
 const RageClick = lazy(() => import("@/components/eggs/RageClick").then(module => ({ default: module.RageClick })));
 const ForbiddenButton = lazy(() => import("@/components/eggs/ForbiddenButton").then(module => ({ default: module.ForbiddenButton })));
 
-type AppState = "home" | "camp" | "survey" | "loading" | "result" | "reaction";
+type AppState = "home" | "camp" | "game" | "loading" | "result" | "reaction";
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("home");
@@ -43,19 +45,25 @@ const Index = () => {
   const [camp, setCamp] = useState<Camp>(null);
   const [retestCount, setRetestCount] = useState(0);
   const [showReaction, setShowReaction] = useState(true);
-  const [showTaunt, setShowTaunt] = useState(false);
-  const [pendingAnswer, setPendingAnswer] = useState<string | null>(null);
 
   // 挑战相关 State
   const [inviterInfo, setInviterInfo] = useState<{ name: string, camp: string } | null>(null);
   const [hasStarted, setHasStarted] = useState(false); // 控制是否点击开始
+
+  // 游戏模式 State
+  const [showCleaner, setShowCleaner] = useState(false);
+  const [showBootLoader, setShowBootLoader] = useState(false);
+  const [regretResolved, setRegretResolved] = useState(false);
+  const [collectedRegret, setCollectedRegret] = useState("");
+  const [collectedWish, setCollectedWish] = useState("");
+  const [gameAttributes, setGameAttributes] = useState<GameAttributes | null>(null);
 
   const survey = useSurvey();
   const { unlock } = useCollection();
 
   // 如果已完成，直接显示结果 - 必须在所有条件判断之前
   useEffect(() => {
-    if (survey.result && !survey.isLoading) {
+    if (survey.result && !survey.isLoading && !hasStarted) {
       // 解锁图鉴
       unlock(survey.result.mainTag);
 
@@ -66,7 +74,10 @@ const Index = () => {
       });
 
       // 首次完成显示反应页面，重测后也显示
-      setAppState(showReaction ? "reaction" : "result");
+      // 如果已经在 'result' 状态就不跳了，防止无限重置状态
+      if (appState !== "result" && appState !== "reaction") {
+        setAppState(showReaction ? "reaction" : "result");
+      }
 
       // Delay toast slightly to not conflict with transition
       setTimeout(() => {
@@ -76,7 +87,7 @@ const Index = () => {
         });
       }, 1000);
     }
-  }, [survey.result, survey.isLoading, showReaction]);
+  }, [survey.result, survey.isLoading, showReaction, hasStarted]);
 
   // 检查URL参数 (Battle Mode)
   useEffect(() => {
@@ -94,12 +105,11 @@ const Index = () => {
   useEffect(() => {
     if (appState === 'loading') {
       const messages = [
-        '正在偷偷记录你的选择...',
-        '嗯，有点意思...',
-        '这个选择暴露了你...',
-        '系统正在疯狂分析中...',
-        '正在计算你的"含毒量"...',
-        '生成专属人设中...',
+        '正在重构人格数据...',
+        '检测到灵魂异常...',
+        '正在清理2025缓存...',
+        '加载2026新驱动...',
+        '系统重启中...',
       ];
       let index = 0;
       const interval = setInterval(() => {
@@ -130,9 +140,68 @@ const Index = () => {
     setInviterInfo(null);
     setAppState("home");
     setReportCardIndex(0);
+    // 重置游戏状态
+    setShowCleaner(false);
+    setShowBootLoader(false);
+    setRegretResolved(false);
+    setCollectedRegret("");
+    setCollectedWish("");
+    setGameAttributes(null);
+
     // 清除URL参数但不刷新页面
     window.history.pushState({}, '', window.location.pathname);
   };
+
+  // 游戏事件处理
+  const handleTriggerRegret = () => {
+    setShowCleaner(true);
+  };
+
+  const handleRegretCleaned = (regret: string) => {
+    setCollectedRegret(regret);
+    setShowCleaner(false);
+    setRegretResolved(true);
+    toast.success("Memory Defragmented Successfully");
+  };
+
+  const handleTriggerWish = () => {
+    // 先暂存当前属性状态，虽然 LifeEditor 还在变，但这里是个触发点
+    // 实际属性会在 SystemBootLoader 完成后再次确认
+    setShowBootLoader(true);
+  };
+
+  const handleSystemBoot = async (wish: string) => {
+    setCollectedWish(wish);
+    setShowBootLoader(false);
+    setAppState("loading");
+
+    // 提交数据
+    // 注意：我们需要 LifeEditor 当前的属性。
+    // 由于 LifeEditor 是子组件，我们最好让 LifeEditor 在触发 Wish 时就把属性传出来，或者用 Context/Ref
+    // 简化起见，我们在 LifeEditor 内部状态变化时其实不需要实时传出来，
+    // 但我们需要最终状态。我们假设 handleTriggerWish 时 LifeEditor 并没有把属性传出来。
+    // 修正方案：修改 handleTriggerWish 接收属性
+    // 这里我们简单hack一下：因为 React State 是异步的，我们让 LifeEditor 在调用 onTriggerWish 时把 attributes 传出来。
+    // 但为了不改动太多，我们假设在 `handleGameComplete` 时拿到最终数据？
+    // 不，SystemBootLoader 占用了屏幕，LifeEditor 还在后面。
+    // 我们可以让 LifeEditor 持续这一刻的状态。
+
+    // 实际上，我们应该在 SystemBootLoader 完成后才去调用 submitGameData。
+    // 但是 gameAttributes 还没拿到。
+    // 让我们修改 LifeEditor，使其在 triggerWish 时传递 currentAttributes。
+  };
+
+  // 修改：专门用于接收游戏最终数据的方法，由 BootLoader 完成后触发
+  const finalizeGame = async (wish: string) => {
+    if (gameAttributes) {
+      await survey.submitGameData(gameAttributes, collectedRegret, wish);
+      // 等待一下让 loading 动画播放完
+      setTimeout(() => {
+        // survey.submitGameData 会更新 survey.result，导致 useEffect 触发跳转
+      }, 2000);
+    }
+  };
+
 
   // 首页 - 挑衅式设计
   if (appState === "home") {
@@ -183,7 +252,7 @@ const Index = () => {
             <>
               {/* 顶部热度标签 */}
               <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-500/30 animate-pulse w-max max-w-[90%]">
-                <span className="text-red-400 text-sm font-medium truncate">🔥 警告：87%的人测完不敢承认结果</span>
+                <span className="text-red-400 text-sm font-medium truncate">🔥 警告：这里没有完美人生</span>
               </div>
 
               {/* 主要内容区域 */}
@@ -210,32 +279,14 @@ const Index = () => {
                   >
                     <span className="flex items-center justify-center gap-3">
                       <Zap className="w-6 h-6" />
-                      我不信，测一下
+                      启动人生模拟
                       <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
                   <p className="text-xs text-red-400/80 font-bold bg-black/20 px-3 py-1 rounded-full border border-red-500/20 animate-pulse">
-                    ⚠️ 警告：测试可能引起不适，但很准
+                    ⚠️ 警告：系统资源有限，请谨慎分配
                   </p>
                 </div>
-
-                {/* 挑衅式社交证明 */}
-                <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-                  <div className="flex items-center justify-center gap-4 text-white/40 text-xs">
-                    <span>🎯 准到可怕</span>
-                    <span>•</span>
-                    <span>💀 毒舌预警</span>
-                    <span>•</span>
-                    <span>😱 不敢让同事看到</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 底部装饰 */}
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 opacity-60">
-                <span className="text-2xl animate-float">🔥</span>
-                <span className="text-3xl animate-float" style={{ animationDelay: '0.5s' }}>👀</span>
-                <span className="text-2xl animate-float" style={{ animationDelay: '1s' }}>⚡</span>
               </div>
             </>
           )}
@@ -262,11 +313,11 @@ const Index = () => {
           <CampSelection
             onSelect={(selectedCamp) => {
               setCamp(selectedCamp);
-              setAppState("survey");
+              setAppState("game"); // 修改跳转到 'game'
             }}
             onSkip={() => {
               setCamp(null);
-              setAppState("survey");
+              setAppState("game"); // 修改跳转到 'game'
             }}
           />
         </div>
@@ -274,92 +325,46 @@ const Index = () => {
     );
   }
 
-  // 问卷页面
-  if (appState === "survey") {
-    const handleAnswer = (answer: string) => {
-      const nextQuestionIndex = survey.currentQuestionIndex + 1;
-
-      // 检查是否需要显示挑衅弹窗
-      if (shouldShowTaunt(nextQuestionIndex, survey.totalQuestions)) {
-        setPendingAnswer(answer);
-        setShowTaunt(true);
-        return;
-      }
-
-      // 正常提交答案
-      survey.answerQuestion(answer);
-      if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
-        setAppState("loading");
-      }
-    };
-
-    const handleTauntContinue = () => {
-      setShowTaunt(false);
-      if (pendingAnswer) {
-        survey.answerQuestion(pendingAnswer);
-        setPendingAnswer(null);
-        if (survey.currentQuestionIndex === survey.totalQuestions - 1) {
-          setAppState("loading");
-        }
-      }
-    };
-
-    const handleTauntQuit = () => {
-      setShowTaunt(false);
-      setPendingAnswer(null);
-      // 返回上一题或首页
-      if (survey.currentQuestionIndex > 0) {
-        survey.goBack();
-      } else {
-        setAppState("home");
-      }
-    };
-
+  // 游戏页面 (替代原 Survey)
+  if (appState === "game") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans">
-        <FloatingElements />
+      <div className="min-h-screen bg-slate-950 relative overflow-hidden text-white font-sans flex items-center justify-center">
+        {/* 故障背景动画 */}
+        <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-[0.03] pointer-events-none mix-blend-screen" />
 
-        {/* 中途挑衅弹窗 */}
-        {showTaunt && (
-          <MidQuestionTaunt
-            questionNumber={survey.currentQuestionIndex + 1}
-            totalQuestions={survey.totalQuestions}
-            onContinue={handleTauntContinue}
-            onQuit={handleTauntQuit}
+        {/* 游戏主界面 */}
+        <div className="w-full max-w-lg relative z-10">
+          <div className="text-center mb-8 space-y-2">
+            <h1 className="text-3xl font-black tracking-tighter glitch-text" data-text="LIFE_EDITOR_v2.0">
+              LIFE_EDITOR_v2.0
+            </h1>
+            <p className="text-slate-500 font-mono text-xs">
+              &gt; ALLOCATE_RESOURCES_CAREFULLY
+            </p>
+          </div>
+
+          <LifeEditor
+            onTriggerRegret={handleTriggerRegret}
+            onTriggerWish={(attrs: any) => {
+              // 需要修改 LifeEditor 让它传回 attrs
+              // 这里假设我们修改了 LifeEditor，或者如果是原来的接口，我们这里可能在 render 中拿不到 attrs
+              // 临时的 hack: 我们利用 setState 的副作用，或者稍微改一下 LifeEditor
+              // 既然还没改 LifeEditor，我们先传入一个空函数占位，等会用 tool 改 LifeEditor
+              handleTriggerWish();
+              setGameAttributes(attrs);
+            }}
+            onComplete={() => { }} // 暂时不用
+            regretResolved={regretResolved}
           />
-        )}
 
-        <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
-          {/* 进度条和返回 */}
-          <div className="flex items-center gap-4 mb-6">
-            <button
-              onClick={() => {
-                if (survey.currentQuestionIndex > 0) {
-                  survey.goBack();
-                } else {
-                  setAppState("home");
-                }
-              }}
-              className="p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-            <div className="flex-1">
-              <ProgressBar current={survey.progress} total={survey.totalQuestions} />
-            </div>
-          </div>
+          {/* 遮罩层组件 */}
+          {showCleaner && (
+            <MemoryCleaner onClean={handleRegretCleaned} />
+          )}
 
-          {/* 问题卡片 */}
-          <div className="flex-1 flex items-center justify-center">
-            {survey.currentQuestion && (
-              <QuestionCard
-                question={survey.currentQuestion}
-                onAnswer={handleAnswer}
-                questionNumber={survey.currentQuestionIndex + 1}
-                totalQuestions={survey.totalQuestions}
-              />
-            )}
-          </div>
+          {showBootLoader && (
+            <SystemBootLoader onBoot={finalizeGame} />
+          )}
         </div>
       </div>
     );
@@ -376,13 +381,8 @@ const Index = () => {
 
         <div className="text-center space-y-6 animate-fade-in z-10">
           <div className="text-7xl animate-bounce-slow">🔮</div>
-          <h2 className="text-2xl font-bold text-white">{loadingMessage || '正在生成你的人设...'}</h2>
-          <p className="text-white/60">准备好接受灵魂拷问了吗 👀</p>
-          <div className="flex justify-center gap-2">
-            <span className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
-            <span className="w-3 h-3 bg-coral rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
-            <span className="w-3 h-3 bg-mint rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-          </div>
+          <h2 className="text-2xl font-bold text-white">{loadingMessage || '正在重构人格数据...'}</h2>
+          <p className="text-white/60">系统正在写入您的2026启动指令...</p>
         </div>
       </div>
     );
@@ -400,11 +400,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen relative z-10">
           {/* 结果展示 */}
           <div className="text-center space-y-6 mb-8 animate-fade-in">
-            <p className="text-white/60">你的2025年度人设是...</p>
+            <p className="text-white/60">您的系统已重构完成，确诊为...</p>
             {/* 结果展示 - 优先显示图片 */}
             <div className="relative w-48 h-48 mx-auto animate-bounce-slow">
-              <div className={`absolute inset - 0 bg - gradient - to - r ${ survey.result.color } rounded - full blur - 3xl opacity - 20`} />
-             <div className={`absolute inset-0 bg-gradient-to-r ${survey.result.color} rounded-full blur-3xl opacity-20`} />
+              <div className={`absolute inset - 0 bg - gradient - to - r ${survey.result.color} rounded - full blur - 3xl opacity - 20`} />
+              <div className={`absolute inset-0 bg-gradient-to-r ${survey.result.color} rounded-full blur-3xl opacity-20`} />
               {survey.result.image ? (
                 <img
                   src={survey.result.image}
@@ -417,7 +417,7 @@ const Index = () => {
                 </div>
               )}
             </div>
-           <h1 className={`text-5xl font-black bg-gradient-to-r ${survey.result.color} bg-clip-text text-transparent`}>
+            <h1 className={`text-5xl font-black bg-gradient-to-r ${survey.result.color} bg-clip-text text-transparent`}>
               {survey.result.mainTag}
             </h1>
             <p className="text-white/70 max-w-sm mx-auto">{survey.result.description}</p>
@@ -437,8 +437,9 @@ const Index = () => {
                 onRetest={() => {
                   setRetestCount(prev => prev + 1);
                   setShowReaction(true);
-                  survey.restart();
-                  setAppState("camp");
+                  // 重置游戏
+                  handleReset();
+                  setAppState("camp"); // 实际上 handleReset 会设为 home，这里覆盖一下
                 }}
               />
             </Suspense>
@@ -491,11 +492,10 @@ const Index = () => {
               <button
                 key={index}
                 onClick={() => setReportCardIndex(index)}
-               className={`h-2 rounded-full transition-all duration-300 ${
-  index === reportCardIndex
-    ? 'bg-primary w-8'
-    : 'bg-white/30 w-2 hover:bg-white/50'
- }`}
+                className={`h-2 rounded-full transition-all duration-300 ${index === reportCardIndex
+                  ? 'bg-primary w-8'
+                  : 'bg-white/30 w-2 hover:bg-white/50'
+                  }`}
               />
             ))}
           </div>
@@ -528,30 +528,15 @@ const Index = () => {
             )}
           </div>
 
-          {/* 重测按钮 & 挑战结果提示 */}
+          {/* 重测按钮 */}
           <div className="flex flex-col items-center gap-4 py-4">
-            {/* 如果是挑战模式，显示挑战结果小贴士 */}
-            {inviterInfo && (
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center max-w-xs animate-pulse">
-                <p className="text-xs text-white/60 mb-1">本次挑战结果</p>
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-yellow-400 font-bold">{inviterInfo.camp}</span>
-                  <span className="text-xs">VS</span>
-                  <span className="text-primary font-bold">{survey.result.mainTag}</span>
-                </div>
-                <p className="text-xs text-white/40 mt-1">
-                  {inviterInfo.camp === survey.result.mainTag ? "居然是同类！" : "果然是宿敌！"}
-                </p>
-              </div>
-            )}
-
             <Button
               variant="ghost"
               onClick={handleReset}
               className="text-white/60 hover:text-white hover:bg-white/10"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
-              不服？重测一次
+              系统需要重新校准？(重测)
             </Button>
           </div>
         </div>

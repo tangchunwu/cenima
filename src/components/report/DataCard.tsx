@@ -160,7 +160,7 @@ export const DataCard = ({ result, answers }: DataCardProps) => {
               return (
                 <div key={key} className="flex justify-between items-center border-b border-white/5 pb-1">
                   <span className="text-white/60 text-xs font-mono">{labels[key] || key}</span>
-                  <span className="text-white font-bold font-mono">{value}</span>
+                   <span className="text-white font-bold font-mono">{String(value)}</span>
                 </div>
               )
             })}

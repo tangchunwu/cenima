@@ -168,41 +168,31 @@ const Index = () => {
     toast.success("TIME REVERSAL SUCCESSFUL (时间回溯成功)");
   };
 
-  const handleTriggerWish = () => {
-    // 先暂存当前属性状态，虽然 LifeEditor 还在变，但这里是个触发点
-    // 实际属性会在 SystemBootLoader 完成后再次确认
+  const handleTriggerWish = (attributes: GameAttributes, choices: any[]) => {
+    setGameAttributes(attributes);
+    setGameChoices(choices);
     setShowBootLoader(true);
   };
 
-  const handleSystemBoot = async (wish: string) => {
+  // 专门用于接收游戏最终数据的方法，由 BootLoader 完成后触发
+  const finalizeGame = async (wish: string) => {
     setCollectedWish(wish);
     setShowBootLoader(false);
     setAppState("loading");
 
-    // 提交数据
-    // 注意：我们需要 LifeEditor 当前的属性。
-    // 由于 LifeEditor 是子组件，我们最好让 LifeEditor 在触发 Wish 时就把属性传出来，或者用 Context/Ref
-    // 简化起见，我们在 LifeEditor 内部状态变化时其实不需要实时传出来，
-    // 但我们需要最终状态。我们假设 handleTriggerWish 时 LifeEditor 并没有把属性传出来。
-    // 修正方案：修改 handleTriggerWish 接收属性
-    // 这里我们简单hack一下：因为 React State 是异步的，我们让 LifeEditor 在调用 onTriggerWish 时把 attributes 传出来。
-    // 但为了不改动太多，我们假设在 `handleGameComplete` 时拿到最终数据？
-    // 不，SystemBootLoader 占用了屏幕，LifeEditor 还在后面。
-    // 我们可以让 LifeEditor 持续这一刻的状态。
-
-    // 实际上，我们应该在 SystemBootLoader 完成后才去调用 submitGameData。
-    // 但是 gameAttributes 还没拿到。
-    // 让我们修改 LifeEditor，使其在 triggerWish 时传递 currentAttributes。
-  };
-
-  // 修改：专门用于接收游戏最终数据的方法，由 BootLoader 完成后触发
-  const finalizeGame = async (wish: string) => {
     if (gameAttributes) {
-      await survey.submitGameData(gameAttributes, collectedRegret, wish, gameChoices);
-      // 等待一下让 loading 动画播放完
-      setTimeout(() => {
+      try {
+        await survey.submitGameData(gameAttributes, collectedRegret, wish, gameChoices);
         // survey.submitGameData 会更新 survey.result，导致 useEffect 触发跳转
-      }, 2000);
+      } catch (error) {
+        console.error("Game submission failed:", error);
+        toast.error("数据上传失败，请重试");
+        setAppState("game"); // 回退防止卡死
+      }
+    } else {
+      console.error("Game attributes missing during finalize!");
+      toast.error("游戏数据丢失");
+      setAppState("home");
     }
   };
 

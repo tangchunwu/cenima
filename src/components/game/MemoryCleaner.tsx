@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, AlertOctagon, FileWarning } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MemoryCleanerProps {
        onClean: (memory: string) => void;
 }
 
 export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
+       const { t } = useLanguage();
        const [input, setInput] = useState('');
        const [isCleaning, setIsCleaning] = useState(false);
 
@@ -34,10 +36,10 @@ export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
                                                  <AlertOctagon className="w-8 h-8 text-red-500" />
                                           </div>
                                           <h2 className="text-xl font-black text-white font-mono uppercase tracking-widest">
-                                                 Memory Overflow
+                                                 {t('cleaner.title')}
                                           </h2>
                                           <p className="text-red-400 text-sm font-mono">
-                                                 ERROR_CODE: 2025_REGRET_LEAK
+                                                 {t('cleaner.code')}
                                           </p>
                                    </div>
 
@@ -45,12 +47,13 @@ export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
                                           <div className="flex items-start gap-3">
                                                  <FileWarning className="w-5 h-5 text-red-500 mt-1 flex-shrink-0" />
                                                  <div className="space-y-1">
-                                                        <p className="text-sm font-bold text-red-100">System Performance Degraded</p>
-                                                        <p className="text-xs text-red-200/60 leading-relaxed">
-                                                               Corrupted data fragments from 2025 are consuming 87% of emotional RAM. Manual deletion required to restore system stability.
-                                                        </p>
+                                                        <p className="text-sm font-bold text-red-100">{t('cleaner.fatal')}</p>
+                                                        <div className="text-xs text-red-200/60 leading-relaxed">
+                                                               <p>{t('cleaner.desc1')}</p>
+                                                               <p>{t('cleaner.desc2')}</p>
+                                                        </div>
                                                         <p className="text-xs text-red-400 font-mono mt-2">
-                     > Please verify the filename of the corrupted memory:
+                                                               {t('cleaner.prompt')}
                                                         </p>
                                                  </div>
                                           </div>
@@ -58,7 +61,7 @@ export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
                                           <Input
                                                  value={input}
                                                  onChange={(e) => setInput(e.target.value)}
-                                                 placeholder="e.g. 错过的机会 / 前任 / 没存钱..."
+                                                 placeholder={t('cleaner.placeholder')}
                                                  className="bg-black/50 border-red-900/50 text-white placeholder:text-red-500/20 font-mono"
                                                  autoFocus
                                           />
@@ -68,28 +71,28 @@ export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
                                           onClick={handleClean}
                                           disabled={!input.trim() || isCleaning}
                                           className={`w-full h-14 font-black text-lg uppercase tracking-wider transition-all duration-300 ${isCleaning
-                                                        ? 'bg-red-500 text-white cursor-wait'
-                                                        : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] shadow-lg shadow-red-600/20'
+                                                 ? 'bg-yellow-500 text-black cursor-wait'
+                                                 : 'bg-red-600 hover:bg-red-500 text-white hover:scale-[1.02] shadow-lg shadow-red-600/20'
                                                  }`}
                                    >
                                           {isCleaning ? (
                                                  <span className="flex items-center gap-2 animate-pulse">
                                                         <Trash2 className="w-5 h-5 animate-spin" />
-                                                        Purging Data...
+                                                        {t('cleaner.btn.reversing')}
                                                  </span>
                                           ) : (
                                                  <span className="flex items-center gap-2">
                                                         <Trash2 className="w-5 h-5" />
-                                                        Force Delete
+                                                        {t('cleaner.btn.init')}
                                                  </span>
                                           )}
                                    </Button>
 
                                    <p className="text-[10px] text-center text-white/20 font-mono">
-                                          * Warning: Deleted memories cannot be recovered.
+                                          {t('cleaner.warn')}
                                    </p>
                             </div>
                      </div>
-              </div>
+              </div >
        );
 };

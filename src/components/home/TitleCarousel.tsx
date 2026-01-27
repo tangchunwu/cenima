@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const TitleCarousel = () => {
+       const { t } = useLanguage();
        const [index, setIndex] = useState(0);
 
        useEffect(() => {
@@ -10,12 +12,17 @@ export const TitleCarousel = () => {
               return () => clearInterval(interval);
        }, []);
 
-       const titles = ['别不信', '别装了', '别破防', '别想逃'];
+       const titles = [
+              t('home.carousel.t1'),
+              t('home.carousel.t2'),
+              t('home.carousel.t3'),
+              t('home.carousel.t4')
+       ];
        const subtitles = [
-              '你的人设比你想的更毒 👀',
-              '87%的人测完不敢发朋友圈 🤐',
-              '测完可能会和朋友吵架 💔',
-              '你的2025比你想的更离谱 📉'
+              t('home.carousel.s1'),
+              t('home.carousel.s2'),
+              t('home.carousel.s3'),
+              t('home.carousel.s4')
        ];
 
        return (
@@ -31,9 +38,9 @@ export const TitleCarousel = () => {
 
                      {/* 副标题 */}
                      <p className="text-xl md:text-2xl text-white/70 font-medium animate-fade-in">
-                            12道题，<span className="text-primary font-bold">揭穿</span>你的2025真面目
+                            {t('home.title.static')}
                             <br />
-                            <span className="text-sm text-white/50">（已有 24,593 人测完想删记录）</span>
+                            <span className="text-sm text-white/50">{t('home.title.sub')}</span>
                      </p>
               </div>
        );

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/runtimeClient";
 import { getSessionId } from "@/lib/sessionUtils";
 import { questions, totalQuestions, Question } from "@/lib/questions";
 import { calculateResult, Answers, TagResult } from "@/lib/resultCalculator";
-import { GameAttributes, mapAttributesToAnswers, determineGameResultTag } from "@/lib/gameResultMapper";
+import { GameAttributes, mapAttributesToAnswers, determineGameResultTag, analyzeGameResult, ChoiceRecord } from "@/lib/gameResultMapper";
 
 
 export interface SurveyState {
@@ -166,7 +166,8 @@ export function useSurvey() {
   const submitGameData = useCallback(async (
     attributes: GameAttributes,
     regret: string,
-    wish: string
+    wish: string,
+    choices: ChoiceRecord[] = []
   ) => {
     // 1. 将游戏属性转化为 Answers 格式
     const mappedAnswers = mapAttributesToAnswers(attributes);
@@ -174,7 +175,8 @@ export function useSurvey() {
     // 2. 构造 Open Answers
     const openAnswers = {
       'open_regret': regret,
-      'open_wish': wish
+      'open_wish': wish,
+      'game_choices_log': JSON.stringify(choices)
     };
 
     // 3. 计算结果
@@ -183,7 +185,7 @@ export function useSurvey() {
     // 不过为了确保结果准确匹配我们的游戏逻辑，我们可以手动 override 结果类型
 
     let result = calculateResult(mappedAnswers);
-    const forcedMainTag = determineGameResultTag(attributes);
+    const forcedMainTag = analyzeGameResult(attributes, choices);
 
     // 强制覆盖主标签，确保结果符合游戏直觉
     // 注意：subTags 可能还是根据 answers 算的，这可能导致不一致，但也能接受

@@ -2,12 +2,15 @@ import { ReportCard } from "./ReportCard";
 import { TagResult } from "@/lib/resultCalculator";
 import { cn } from "@/lib/utils";
 import { User, ScanBarcode, Fingerprint } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TagCardProps {
   result: TagResult;
 }
 
 export function TagCard({ result }: TagCardProps) {
+  const { t } = useLanguage();
+
   return (
     <ReportCard className="relative overflow-hidden bg-slate-100 text-slate-800 border-2 border-slate-300 shadow-md">
       {/* 顶部挂绳孔装饰 */}
@@ -21,7 +24,7 @@ export function TagCard({ result }: TagCardProps) {
             <span>ID-{Math.random().toString(36).substr(2, 6).toUpperCase()}</span>
           </div>
           <div className="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-            Subject Profile
+            {t('report.id')}
           </div>
         </div>
 
@@ -40,7 +43,7 @@ export function TagCard({ result }: TagCardProps) {
 
         {/* 主标签 */}
         <div className="text-center space-y-1">
-          <p className="text-xs text-slate-400 font-bold tracking-widest uppercase">Assigned Designation</p>
+          <p className="text-xs text-slate-400 font-bold tracking-widest uppercase">{t('report.diagnosis')}</p>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">
             {result.mainTag}
           </h2>
@@ -51,13 +54,13 @@ export function TagCard({ result }: TagCardProps) {
           <div className="absolute top-0 right-0 p-1">
             <Fingerprint className="w-12 h-12 text-slate-100 -rotate-12" />
           </div>
-          <p className="text-xs text-slate-400 font-bold mb-1 uppercase">Clinical Observation</p>
+          <p className="text-xs text-slate-400 font-bold mb-1 uppercase">{t('report.observation')}</p>
           <p className="text-slate-600 text-sm leading-relaxed font-medium">
             {result.description}
           </p>
 
           <div className="mt-3 pt-3 border-t border-slate-100">
-            <p className="text-xs text-slate-400 font-bold mb-1 uppercase">Behavioral Notes (Toxic)</p>
+            <p className="text-xs text-slate-400 font-bold mb-1 uppercase">{t('report.behavior')}</p>
             <p className="text-red-500 text-xs italic">
               "{result.roast}"
             </p>
@@ -66,7 +69,7 @@ export function TagCard({ result }: TagCardProps) {
 
         {/* 特征标签 */}
         <div className="w-full">
-          <p className="text-xs text-slate-400 font-bold mb-2 uppercase text-center">Trait Markers</p>
+          <p className="text-xs text-slate-400 font-bold mb-2 uppercase text-center">{t('report.traits')}</p>
           <div className="flex flex-wrap justify-center gap-2">
             {result.subTags.map((tag, index) => (
               <span

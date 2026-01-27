@@ -1,26 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Terminal, ChevronRight, Power } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SystemBootLoaderProps {
        onBoot: (command: string) => void;
 }
 
 export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
+       const { t } = useLanguage();
        const [command, setCommand] = useState('');
        const [step, setStep] = useState(0); // 0: typing logs, 1: input, 2: launching
 
        // 模拟开机自检日志
        const [logs, setLogs] = useState<string[]>([]);
-       const bootLogs = [
-              "BIOS_CHECK... OK",
-              "LOADING_KERNEL... OK",
-              "MOUNTING_DEVICES... DONE",
-              "CHECKING_EMOTIONAL_DRIVERS... OPTIMIZED",
-              "DELETING_OLD_CACHES....... CLEARED",
-              "INITIALIZING_2026_CORE... READY",
-       ];
+
+       const bootLogs = useMemo(() => [
+              t('boot.log.1'),
+              t('boot.log.2'),
+              t('boot.log.3'),
+              t('boot.log.4'),
+              t('boot.log.5'),
+              t('boot.log.6'),
+       ], [t]);
 
        useEffect(() => {
               let delay = 0;
@@ -33,7 +37,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                             }
                      }, delay);
               });
-       }, []);
+       }, [bootLogs]);
 
        const handleBoot = (e: React.FormEvent) => {
               e.preventDefault();
@@ -51,7 +55,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
 
                             {/* Terminal Header */}
                             <div className="border-b border-green-500/30 pb-2 mb-4 flex justify-between items-center">
-                                   <span className="text-xs">ROOT_ACCESS_TERMINAL v2.0.26</span>
+                                   <span className="text-xs">{t('boot.header')}</span>
                                    <div className="flex gap-1">
                                           <div className="w-3 h-3 rounded-full bg-red-500/20" />
                                           <div className="w-3 h-3 rounded-full bg-yellow-500/20" />
@@ -78,7 +82,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                                                  animate={{ opacity: 1 }}
                                                  className="text-white mt-4 bg-green-900/20 p-2 border-l-2 border-green-500"
                                           >
-               > SYSTEM READY. WAITING FOR USER DIRECTIVE.
+                                                 {t('boot.ready')}
                                           </motion.div>
                                    )}
                             </div>
@@ -92,7 +96,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                                           className="mt-8 relative"
                                    >
                                           <p className="text-xs text-green-400/60 mb-2 uppercase tracking-widest">
-                                                 Please enter your primary goal for 2026 to initialize:
+                                                 {t('boot.ask')}
                                           </p>
                                           <div className="flex items-center gap-2 border-b-2 border-green-500 py-2">
                                                  <ChevronRight className="w-6 h-6 animate-pulse" />
@@ -101,7 +105,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                                                         value={command}
                                                         onChange={(e) => setCommand(e.target.value)}
                                                         className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-white placeholder:text-green-500/30 uppercase"
-                                                        placeholder="Type command..."
+                                                        placeholder={t('boot.placeholder')}
                                                  />
                                                  <Button type="submit" size="icon" variant="ghost" className="hover:bg-green-500/20 text-green-500">
                                                         <Power className="w-5 h-5" />

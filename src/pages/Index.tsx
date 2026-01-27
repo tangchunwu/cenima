@@ -13,13 +13,14 @@ import { PrescriptionCard } from "@/components/report/PrescriptionCard";
 import { calculateHealthIndices } from "@/lib/resultCalculator";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
-import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Zap, ArrowRight, Loader2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackgroundEffect } from "@/components/decorations/BackgroundEffect";
 import { TitleCarousel } from "@/components/home/TitleCarousel";
 import { useCollection } from "@/hooks/useCollection";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Game Mode Components
 import { LifeEditor } from "@/components/game/LifeEditor";
@@ -57,13 +58,15 @@ const Index = () => {
   const [collectedRegret, setCollectedRegret] = useState("");
   const [collectedWish, setCollectedWish] = useState("");
   const [gameAttributes, setGameAttributes] = useState<GameAttributes | null>(null);
+  const [gameChoices, setGameChoices] = useState<any[]>([]);
 
   const survey = useSurvey();
   const { unlock } = useCollection();
+  const { language, toggleLanguage, t } = useLanguage();
 
   // 如果已完成，直接显示结果 - 必须在所有条件判断之前
   useEffect(() => {
-    if (survey.result && !survey.isLoading && !hasStarted) {
+    if (survey.result && !survey.isLoading) {
       // 解锁图鉴
       unlock(survey.result.mainTag);
 
@@ -147,6 +150,7 @@ const Index = () => {
     setCollectedRegret("");
     setCollectedWish("");
     setGameAttributes(null);
+    setGameChoices([]);
 
     // 清除URL参数但不刷新页面
     window.history.pushState({}, '', window.location.pathname);
@@ -161,7 +165,7 @@ const Index = () => {
     setCollectedRegret(regret);
     setShowCleaner(false);
     setRegretResolved(true);
-    toast.success("Memory Defragmented Successfully");
+    toast.success("TIME REVERSAL SUCCESSFUL (时间回溯成功)");
   };
 
   const handleTriggerWish = () => {
@@ -194,7 +198,7 @@ const Index = () => {
   // 修改：专门用于接收游戏最终数据的方法，由 BootLoader 完成后触发
   const finalizeGame = async (wish: string) => {
     if (gameAttributes) {
-      await survey.submitGameData(gameAttributes, collectedRegret, wish);
+      await survey.submitGameData(gameAttributes, collectedRegret, wish, gameChoices);
       // 等待一下让 loading 动画播放完
       setTimeout(() => {
         // survey.submitGameData 会更新 survey.result，导致 useEffect 触发跳转
@@ -250,10 +254,20 @@ const Index = () => {
           ) : (
             /* 正常首页逻辑 */
             <>
+
               {/* 顶部热度标签 */}
               <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-500/30 animate-pulse w-max max-w-[90%]">
-                <span className="text-red-400 text-sm font-medium truncate">🔥 警告：这里没有完美人生</span>
+                <span className="text-red-400 text-sm font-medium truncate">{t('home.warn_tag')}</span>
               </div>
+
+              {/* 语言切换按钮 - 右上角 */}
+              <button
+                onClick={toggleLanguage}
+                className="absolute top-6 right-6 z-50 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-all active:scale-95 text-white"
+              >
+                <Globe className="w-4 h-4 text-white/80" />
+                <span className="text-xs font-bold text-white/90">{t('ui.switch_lang')}</span>
+              </button>
 
               {/* 主要内容区域 */}
               <div className="text-center space-y-8 animate-fade-in w-full max-w-md">
@@ -279,12 +293,12 @@ const Index = () => {
                   >
                     <span className="flex items-center justify-center gap-3">
                       <Zap className="w-6 h-6" />
-                      启动人生模拟
+                      {t('home.btn.start')}
                       <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
                   <p className="text-xs text-red-400/80 font-bold bg-black/20 px-3 py-1 rounded-full border border-red-500/20 animate-pulse">
-                    ⚠️ 警告：系统资源有限，请谨慎分配
+                    {t('home.warn.btn')}
                   </p>
                 </div>
               </div>
@@ -345,14 +359,7 @@ const Index = () => {
 
           <LifeEditor
             onTriggerRegret={handleTriggerRegret}
-            onTriggerWish={(attrs: any) => {
-              // 需要修改 LifeEditor 让它传回 attrs
-              // 这里假设我们修改了 LifeEditor，或者如果是原来的接口，我们这里可能在 render 中拿不到 attrs
-              // 临时的 hack: 我们利用 setState 的副作用，或者稍微改一下 LifeEditor
-              // 既然还没改 LifeEditor，我们先传入一个空函数占位，等会用 tool 改 LifeEditor
-              handleTriggerWish();
-              setGameAttributes(attrs);
-            }}
+            onTriggerWish={handleTriggerWish}
             onComplete={() => { }} // 暂时不用
             regretResolved={regretResolved}
           />

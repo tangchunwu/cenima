@@ -20,7 +20,8 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   const [generateTrigger, setGenerateTrigger] = useState(false);
 
   // 生成挑战链接
-  const battleLink = `${window.location.origin}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
+  const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+  const battleLink = `${baseUrl}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
 
   const shareTexts = [
     `🏥 2025年度体检报告出炉\n\n我的确诊结果：【${result.mainTag}】\n症状描述：${result.roast}\n\n建议你也来查查脑子 👉 ${battleLink}`,

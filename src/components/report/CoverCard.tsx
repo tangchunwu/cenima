@@ -62,7 +62,7 @@ export const CoverCard = ({ result }: CoverCardProps) => {
           </div>
 
           {/* 诊断印章 */}
-          <div className="absolute bottom-0 right-4 rotate-[-12deg] animate-pulse">
+          <div className="absolute bottom-0 right-4 rotate-[-12deg] animate-pulse z-20">
             <div className="border-4 border-red-600 text-red-600 px-3 py-1 font-black text-xl rounded opacity-80 backdrop-blur-sm shadow-lg flex items-center gap-1">
               <Stamp className="w-5 h-5" />
               {t('report.confirmed')}

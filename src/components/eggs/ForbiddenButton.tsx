@@ -10,30 +10,82 @@ export const ForbiddenButton = () => {
               if (isExploded) return;
               setIsExploded(true);
 
-              toast("不让你按你非要按...", {
-                     description: "系统将在 3秒后 重启",
-                     icon: "💣",
+              // 0. 初始警告
+              toast.error("⚠️ SYSTEM FAILURE INITIATED", {
+                     duration: 5000,
+                     style: { background: 'red', color: 'white', fontWeight: 'bold' }
               });
 
-              // 1. 给页面上所有主要元素添加下落动画
-              const elements = document.querySelectorAll('div, button, p, h1, h2, img, span');
-              elements.forEach((el) => {
-                     if (el instanceof HTMLElement) {
-                            // 随机延迟和旋转，增加混乱感
-                            const delay = Math.random() * 0.5;
-                            const rotate = (Math.random() - 0.5) * 180;
+              // 1. 视觉冲击 (0s) - 反色 + 震动
+              document.documentElement.style.filter = 'invert(1) contrast(1.5)';
+              document.body.style.transition = 'transform 0.1s';
 
-                            el.style.transition = `transform 1s ease-in ${delay}s, opacity 1s ease-in ${delay}s`;
-                            el.style.transform = `translateY(120vh) rotate(${rotate}deg)`;
-                            el.style.opacity = '0';
-                            el.style.pointerEvents = 'none'; // 禁用交互
-                     }
-              });
+              const shakeInterval = setInterval(() => {
+                     const x = (Math.random() - 0.5) * 20;
+                     const y = (Math.random() - 0.5) * 20;
+                     document.body.style.transform = `translate(${x}px, ${y}px)`;
+              }, 50);
 
-              // 2. 3秒后刷新页面恢复
+              // 2. 元素崩坏 (0.5s) - 炸飞效果
               setTimeout(() => {
+                     const elements = document.querySelectorAll('div, p, h1, h2, button, img');
+                     elements.forEach((el) => {
+                            if (el instanceof HTMLElement && !el.id.includes('crash-overlay')) {
+                                   const angle = Math.random() * 360;
+                                   const velocity = 500 + Math.random() * 1000;
+                                   const x = Math.cos(angle) * velocity;
+                                   const y = Math.sin(angle) * velocity;
+                                   const rotate = Math.random() * 720;
+
+                                   el.style.transition = 'all 1s cubic-bezier(0.25, 1, 0.5, 1)';
+                                   el.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg) scale(${Math.random()})`;
+                                   el.style.opacity = '0';
+                            }
+                     });
+              }, 500);
+
+              // 3. 伪造蓝屏/黑屏 (1.5s)
+              setTimeout(() => {
+                     clearInterval(shakeInterval);
+                     document.body.style.transform = 'none';
+
+                     // 创建崩溃覆盖层
+                     const overlay = document.createElement('div');
+                     overlay.id = 'crash-overlay';
+                     overlay.style.cssText = `
+                            position: fixed; inset: 0; background: #0000AA; color: white; 
+                            font-family: 'Courier New', monospace; z-index: 99999; 
+                            padding: 40px; font-size: 20px; line-height: 1.5;
+                            display: flex; flex-direction: column; justify-content: flex-start;
+                     `;
+                     overlay.innerHTML = `
+                            <div>Running System Diagnostics...</div>
+                            <div style="margin-top: 20px">FATAL ERROR: 0x000000ED</div>
+                            <div>UNMOUNTABLE_BOOT_VOLUME</div>
+                            <br/>
+                            <div>Collecting data for crash dump...</div>
+                            <div>Initializing disk for crash dump...</div>
+                            <div style="margin-top: 20px">Beginning dump of physical memory.</div>
+                            <div>Dumping physical memory to disk: <span id="dump-counter">0</span>%</div>
+                     `;
+                     document.body.appendChild(overlay);
+
+                     // 模拟进度条
+                     let progress = 0;
+                     const dumpInterval = setInterval(() => {
+                            progress += Math.floor(Math.random() * 10);
+                            if (progress > 100) progress = 100;
+                            const counter = document.getElementById('dump-counter');
+                            if (counter) counter.innerText = progress.toString();
+                     }, 100);
+
+              }, 1500);
+
+              // 4. 重启 (4s)
+              setTimeout(() => {
+                     document.documentElement.style.filter = '';
                      window.location.reload();
-              }, 3500);
+              }, 4000);
        };
 
        return (

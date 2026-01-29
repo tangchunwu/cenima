@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LifeEvent } from '@/lib/events';
 import { Timer, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 
 interface EventCardProps {
        event: LifeEvent;
@@ -166,11 +167,11 @@ export const EventCard = ({
                             <div className="relative overflow-hidden group">
                                    {event.image ? (
                                           <div className="w-full h-40 relative overflow-hidden">
-                                                 <img
+                                                 <OptimizedImage
                                                         src={event.image}
                                                         alt={event.title}
-                                                        loading="lazy"
-                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                        priority={eventNumber <= 2}
+                                                        className="w-full h-full transition-transform duration-700 group-hover:scale-110"
                                                  />
                                                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
                                                  {/* Glitch Overlay Effect */}

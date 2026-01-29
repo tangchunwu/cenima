@@ -718,6 +718,14 @@ export const lifeEventsEn: LifeEvent[] = [
        },
 ];
 
+// 获取所有事件图片用于预加载
+export function getAllEventImages(lang: Language = 'zh'): string[] {
+       const source = lang === 'en' ? lifeEventsEn : lifeEventsZh;
+       return source
+              .filter(event => event.image)
+              .map(event => event.image as string);
+}
+
 // 获取随机事件（根据语言）
 export function getRandomEvents(count: number, lang: Language = 'zh'): LifeEvent[] {
        const source = lang === 'en' ? lifeEventsEn : lifeEventsZh;

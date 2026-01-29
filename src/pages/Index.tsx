@@ -24,6 +24,8 @@ import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { DynamicSEO } from "@/components/common/DynamicSEO";
+import { preloadImages } from "@/components/ui/OptimizedImage";
+import { getAllEventImages } from "@/lib/events";
 
 // Game Mode Components
 import { LifeEditor } from "@/components/game/LifeEditor";
@@ -108,6 +110,22 @@ const Index = () => {
     }
   }, []);
 
+  // 预加载事件图片 - 在用户进入阵营选择时开始
+  useEffect(() => {
+    if (appState === 'camp' || appState === 'home') {
+      // 预加载所有事件图片
+      const eventImages = getAllEventImages(language);
+      // 只预加载前6张，其余延迟加载
+      const priorityImages = eventImages.slice(0, 6);
+      preloadImages(priorityImages).then(() => {
+        // 延迟加载剩余图片
+        setTimeout(() => {
+          preloadImages(eventImages.slice(6));
+        }, 2000);
+      });
+    }
+  }, [appState, language]);
+
   // 加载页面的动态文案
   useEffect(() => {
     if (appState === 'loading') {
@@ -126,7 +144,6 @@ const Index = () => {
       return () => clearInterval(interval);
     }
   }, [appState]);
-
 
 
   // 初始加载状态

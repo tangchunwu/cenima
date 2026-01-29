@@ -68,7 +68,6 @@ export const PersonaCard = ({ result }: PersonaCardProps) => {
                                    ))}
                             </div>
                      </div>
-              </div>
               </ReportCard >
        );
 };

@@ -1,6 +1,7 @@
 import { TagResult } from '@/lib/resultCalculator';
 import { ReportCard } from './ReportCard';
 import { Share2, Copy, Check, Download, Loader2, Hospital, Stethoscope, Swords } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -201,6 +202,20 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
             )}
           </Button>
         </div>
+      </div>
+      <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center">
+        <p className="text-xs text-slate-400 mb-3 font-bold uppercase tracking-widest">Scan to Diagnose</p>
+        <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-inner">
+          <QRCodeCanvas
+            value={battleLink || window.location.href}
+            size={80}
+            bgColor={"#ffffff"}
+            fgColor={"#1e293b"}
+            level={"L"}
+            includeMargin={false}
+          />
+        </div>
+        <p className="text-[10px] text-slate-300 mt-2">2026 马生模拟器</p>
       </div>
     </ReportCard>
   );

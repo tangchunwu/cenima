@@ -322,25 +322,42 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                                           exit={{ opacity: 0 }}
                                           className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm rounded-xl"
                                    >
-                                          <div className="text-center space-y-6 p-6 max-w-xs">
-                                                 <div className="w-16 h-16 bg-gradient-to-r from-primary to-coral rounded-full flex items-center justify-center mx-auto animate-pulse">
-                                                        <AlertTriangle className="w-8 h-8 text-white" />
+                                          <div className="relative w-full max-w-xs bg-slate-900/60 p-8 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-xl">
+                                                 {/* Floating Icon Badge */}
+                                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+                                                        <div className="relative group">
+                                                               <div className="absolute inset-0 bg-primary/40 blur-xl rounded-full animate-pulse-slow" />
+                                                               <div className="w-20 h-20 bg-gradient-to-br from-primary to-coral rounded-full flex items-center justify-center border-[6px] border-slate-950 shadow-2xl relative z-10 animate-float">
+                                                                      <AlertTriangle className="w-10 h-10 text-white drop-shadow-md" />
+                                                               </div>
+                                                        </div>
                                                  </div>
-                                                 <div>
-                                                        <h2 className="text-3xl font-black text-white mb-2 tracking-tighter">马生模拟器 v2026</h2>
-                                                        <p className="text-white/60 text-sm leading-relaxed font-mono">
-                                                               谨慎分配你的牛马力<br />
-                                                               <span className="text-[10px] opacity-50">ALLOCATE RESOURCES CAREFULLY</span>
-                                                        </p>
+
+                                                 <div className="mt-8 text-center space-y-4">
+                                                        <div>
+                                                               <h2 className="text-3xl font-black text-white mb-2 tracking-tighter drop-shadow-lg">
+                                                                      马生模拟器 v2026
+                                                               </h2>
+                                                               <p className="text-white/60 text-sm leading-relaxed font-mono">
+                                                                      谨慎分配你的牛马力<br />
+                                                                      <span className="text-[10px] opacity-40 tracking-widest">ALLOCATE RESOURCES CAREFULLY</span>
+                                                               </p>
+                                                        </div>
+
+                                                        <div className="pt-4">
+                                                               <Button
+                                                                      size="lg"
+                                                                      onClick={() => setIsPlaying(true)}
+                                                                      className="w-full h-14 rounded-full font-black text-lg bg-gradient-to-r from-primary via-coral to-primary bg-[length:200%_auto] hover:bg-right transition-[background-position] duration-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_40px_rgba(239,68,68,0.6)] hover:scale-[1.02] border-t border-white/20 group relative overflow-hidden"
+                                                               >
+                                                                      <span className="relative z-10 flex items-center gap-2">
+                                                                             <Play className="w-5 h-5 fill-current" />
+                                                                             开始我的牛马一生
+                                                                      </span>
+                                                                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1s_infinite]" />
+                                                               </Button>
+                                                        </div>
                                                  </div>
-                                                 <Button
-                                                        size="lg"
-                                                        onClick={() => setIsPlaying(true)}
-                                                        className="w-full font-bold bg-gradient-to-r from-primary to-coral hover:opacity-90 shadow-lg shadow-primary/20"
-                                                 >
-                                                        <Play className="w-4 h-4 mr-2" />
-                                                        开始我的牛马一生
-                                                 </Button>
                                           </div>
                                    </motion.div>
                             )}

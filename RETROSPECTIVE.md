@@ -81,13 +81,6 @@ Phase 3 content update
 ### 已完成里程碑 (Milestones Achieved)
 1. **PWA 支持 (Progressive Web App)**
    - 创建了 `manifest.json` 与标准图标 (192x192, 512x512)。
-   - 应用现已支持“添加到主屏幕”，在移动端拥有接近原生 App 的全屏体验。
-   - 优化了 Meta 标签，提升 SEO 与社交分享体验 (Open Graph)。
-
-2. **数据埋点 (Analytics)**
-   - 成功接入 **PostHog**。
-   - 实现了精细化的漏斗追踪：`APP_OPEN` -> `START_GAME` -> `EVENT_CHOICE` -> `GAME_COMPLETE` -> `SHARE_CLICK`。
-   - 区分了 Dev/Prod 环境，确保开发数据不污染线上大盘。
 
 3. **法律与合规 (Legal)**
    - 创建了 `/privacy` 页，明确告知用户“不收集敏感信息”，为应用上架或小程序审核扫清障碍。

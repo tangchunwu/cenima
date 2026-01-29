@@ -18,12 +18,12 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
        const [displayedLogs, setDisplayedLogs] = useState<string[]>([]);
 
        const bootLogs = useMemo(() => [
-              { text: "INITIALIZING KERNEL...", delay: 100 },
-              { text: "LOADING NEURAL MODULES... [OK]", delay: 300 },
-              { text: "CHECKING MEMORY INTEGRITY... 99%", delay: 600 },
-              { text: "MOUNTING FILE SYSTEM... /dev/soul0", delay: 800 },
-              { text: "ESTABLISHING LINK TO 2026...", delay: 1200 },
-              { text: "SYSTEM READY.", delay: 1500 },
+              { text: "INITIALIZING KERNEL... 系统内核初始化", delay: 100 },
+              { text: "LOADING NEURAL MODULES... 神经模块加载 [OK]", delay: 300 },
+              { text: "CHECKING MEMORY INTEGRITY... 记忆完整性校验 99%", delay: 600 },
+              { text: "MOUNTING FILE SYSTEM... 挂载灵魂分区 /dev/soul0", delay: 800 },
+              { text: "ESTABLISHING LINK TO 2026... 正在建立2026时空链接", delay: 1200 },
+              { text: "SYSTEM READY. 系统就绪", delay: 1500 },
        ], []);
 
        // 自动滚动到底部

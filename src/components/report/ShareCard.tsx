@@ -19,8 +19,8 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateTrigger, setGenerateTrigger] = useState(false);
 
-  // 生成挑战链接
-  const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+  // 生成挑战链接 - 使用自定义域名避免微信封禁
+  const baseUrl = 'https://shabi.fun';
   const battleLink = `${baseUrl}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
 
   const shareTexts = [

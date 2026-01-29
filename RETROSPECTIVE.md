@@ -74,4 +74,43 @@ Phase 3 content update
 
 - **SystemBootLoader 国际化**：
   - **问题**：原版启动日志是纯英文，与游戏“接地气”的中文风格割裂。
-  - **解决**：重写日志文案，采用“中英双语”或“伪技术黑话”（如“挂载灵魂分区”），既保留极客感又降低阅读门槛。
+   - **解决**：重写日志文案，采用“中英双语”或“伪技术黑话”（如“挂载灵魂分区”），既保留极客感又降低阅读门槛。
+
+## 2026-01-29：Phase 4 - 上线准备 (Launch Preparation)
+
+### 已完成里程碑 (Milestones Achieved)
+1. **PWA 支持 (Progressive Web App)**
+   - 创建了 `manifest.json` 与标准图标 (192x192, 512x512)。
+   - 应用现已支持“添加到主屏幕”，在移动端拥有接近原生 App 的全屏体验。
+   - 优化了 Meta 标签，提升 SEO 与社交分享体验 (Open Graph)。
+
+2. **数据埋点 (Analytics)**
+   - 成功接入 **PostHog**。
+   - 实现了精细化的漏斗追踪：`APP_OPEN` -> `START_GAME` -> `EVENT_CHOICE` -> `GAME_COMPLETE` -> `SHARE_CLICK`。
+   - 区分了 Dev/Prod 环境，确保开发数据不污染线上大盘。
+
+3. **法律与合规 (Legal)**
+   - 创建了 `/privacy` 页，明确告知用户“不收集敏感信息”，为应用上架或小程序审核扫清障碍。
+
+4. **内容补全 (Content)**
+   - 识别出 10+ 个缺失配图的 Random 类事件。
+   - 成功生成并应用了 8 张 **简体中文像素风** 配图（包括：诈骗电话、手机掉厕所、加班、UFO 等）。
+   - 风格统一为 "Absurdist Pixel Art"，强化了游戏的讽刺幽默感。
+
+### 遇到的挑战 (Challenges)
+1. **API 配额限制 (Rate Limiting)**
+   - **问题**：在批量生成图片时，触发了 `429 Too Many Requests` 和 `503 Service Unavailable` 错误。
+   - **影响**：导致最后两张图片（股市熔断、网红梦）未能生成。
+   - **解决**：
+     - 调整策略，分批次生成。
+     - 优先保证核心高频事件的配图。
+     - 在 `LAUNCH_CHECKLIST.md` 中标记待办，等待配额恢复后补全。
+
+2. **TypeScript 类型定义**
+   - **问题**：新事件引入了 `social` 和 `health` 属性，但原 `LifeEvent` 接口未定义这两个字段，导致构建报错。
+   - **解决**：快速重构 `events.ts` 中的接口定义，将所有属性字段（money, hair, iq, happiness, social, health）设为可选，增强了系统的扩展性。
+
+### 下一步计划 (Next Steps)
+1. **等待配额恢复**：补全剩余 2 张配图。
+2. **代码合并**：将 `feature/pwa-support` 分支合并至主分支。
+3. **最终部署**：部署到 Vercel/Netlify 生产环境。

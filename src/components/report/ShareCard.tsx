@@ -1,10 +1,11 @@
 import { TagResult } from '@/lib/resultCalculator';
 import { ReportCard } from './ReportCard';
-import { Share2, Copy, Check, Download, Loader2, Hospital, Stethoscope } from 'lucide-react';
+import { Share2, Copy, Check, Download, Loader2, Hospital, Stethoscope, Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { PosterGenerator } from './PosterGenerator';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 interface ShareCardProps {
   result: TagResult;
@@ -40,6 +41,7 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   };
 
   const handleShare = async () => {
+    trackEvent(AnalyticsEvents.SHARE_CLICK, { type: 'native_share', result: result.mainTag });
     if (navigator.share) {
       try {
         await navigator.share({
@@ -55,6 +57,7 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   };
 
   const handleGeneratePoster = () => {
+    trackEvent(AnalyticsEvents.SHARE_CLICK, { type: 'poster', result: result.mainTag });
     setIsGenerating(true);
     setGenerateTrigger(true);
   };
@@ -164,6 +167,20 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
           >
             <Share2 className="w-5 h-5 mr-2" />
             转发给病友
+          </Button>
+
+          {/* 新增：发起挑战按钮 */}
+          <Button
+            onClick={() => {
+              trackEvent(AnalyticsEvents.BATTLE_INITIATED, { result: result.mainTag });
+              const url = battleLink;
+              navigator.clipboard.writeText(url);
+              toast.success('挑战书链接已复制！发给Ta看看谁是真牛马');
+            }}
+            className="w-full py-6 rounded-xl text-lg font-black bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-lg shadow-red-500/20 animate-pulse-slow"
+          >
+            <Swords className="w-5 h-5 mr-2" />
+            发起宿命对决 (VS)
           </Button>
 
           <Button

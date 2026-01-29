@@ -539,6 +539,10 @@ const Index = () => {
               <RotateCcw className="w-4 h-4 mr-2" />
               系统需要重新校准？(重测)
             </Button>
+
+            <p className="text-xs text-white/30 animate-pulse pt-4">
+              提示：点击右下角 🍌 查看已收集的变异形态
+            </p>
           </div>
         </div>
       </div>

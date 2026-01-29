@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import { EventCard } from './EventCard';
 import { getRandomEvents, EVENTS_PER_GAME, DECISION_TIME_MS, LifeEvent } from '@/lib/events';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 // 用户选择记录
 export interface ChoiceRecord {
@@ -84,6 +85,13 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                      attributesBefore: { ...attributes },
               };
               setChoices(prev => [...prev, record]);
+
+              // Analytics
+              trackEvent(AnalyticsEvents.EVENT_CHOICE, {
+                     eventId: currentEvent.id,
+                     choice,
+                     eventNumber: currentEventIndex + 1
+              });
 
               // 应用效果
               const effects = choice === 'A' ? currentEvent.optionA.effects : currentEvent.optionB.effects;

@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Flame, Leaf } from 'lucide-react';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 export type Camp = 'juanwang' | 'tangping' | null;
 
@@ -24,7 +25,10 @@ export const CampSelection = ({ onSelect, onSkip }: CampSelectionProps) => {
       <div className="flex gap-4 justify-center">
         {/* 卷王派 */}
         <Button
-          onClick={() => onSelect('juanwang')}
+          onClick={() => {
+            trackEvent(AnalyticsEvents.CAMP_SELECTED, { camp: 'juanwang' });
+            onSelect('juanwang');
+          }}
           className="flex-1 h-auto py-6 px-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 hover:from-red-500/30 hover:to-orange-500/30 border-2 border-red-500/30 hover:border-red-500/50 rounded-2xl transition-all duration-300 hover:scale-105 group"
           variant="ghost"
         >
@@ -41,7 +45,10 @@ export const CampSelection = ({ onSelect, onSkip }: CampSelectionProps) => {
 
         {/* 躺平派 */}
         <Button
-          onClick={() => onSelect('tangping')}
+          onClick={() => {
+            trackEvent(AnalyticsEvents.CAMP_SELECTED, { camp: 'tangping' });
+            onSelect('tangping');
+          }}
           className="flex-1 h-auto py-6 px-4 bg-gradient-to-br from-green-500/20 to-cyan-500/20 hover:from-green-500/30 hover:to-cyan-500/30 border-2 border-green-500/30 hover:border-green-500/50 rounded-2xl transition-all duration-300 hover:scale-105 group"
           variant="ghost"
         >

@@ -92,9 +92,11 @@ export const CoverCard = ({ result }: CoverCardProps) => {
           </p>
         </div>
 
-        {/* 详细描述 */}
-        <div className="bg-slate-100 p-3 rounded text-sm text-slate-600 text-left leading-relaxed border border-slate-200 mx-2">
-          {result.description}
+        {/* 装饰性占位符 - 避免重复描述 */}
+        <div className="mx-2 mt-4 flex items-center justify-center gap-1 opacity-20">
+          <div className="h-1 w-full bg-slate-400 rounded-full" />
+          <div className="h-1 w-full bg-slate-400 rounded-full" />
+          <div className="h-1 w-2/3 bg-slate-400 rounded-full" />
         </div>
 
         {/* 底部翻页提示 */}

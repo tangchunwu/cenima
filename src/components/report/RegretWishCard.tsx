@@ -75,7 +75,7 @@ export const RegretWishCard = ({ regret, wish }: RegretWishCardProps) => {
                                                                initial={{ scale: 3, opacity: 0, rotate: -45 }}
                                                                animate={{ scale: 1, opacity: 1, rotate: -12 }}
                                                                transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                                                               className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center pointer-events-none"
+                                                               className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center pointer-events-none z-20"
                                                         >
                                                                <span className="text-red-500/30 font-black text-4xl uppercase inline-block border-4 border-red-500/30 px-2 rounded backdrop-blur-[1px]">
                                                                       CLEARED

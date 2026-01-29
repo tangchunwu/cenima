@@ -348,14 +348,7 @@ const Index = () => {
 
         {/* 游戏主界面 */}
         <div className="w-full max-w-lg relative z-10">
-          <div className="text-center mb-8 space-y-2">
-            <h1 className="text-3xl font-black tracking-tighter glitch-text" data-text="牛马人生编辑器">
-              牛马人生编辑器
-            </h1>
-            <p className="text-slate-500 font-mono text-xs">
-              &gt; 谨慎分配你的资源
-            </p>
-          </div>
+
 
           <LifeEditor
             onTriggerRegret={handleTriggerRegret}

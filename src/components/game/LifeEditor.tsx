@@ -322,9 +322,9 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                                           exit={{ opacity: 0 }}
                                           className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm rounded-xl"
                                    >
-                                          <div className="relative w-full max-w-xs bg-slate-900/60 p-8 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-xl">
+                                          <div className="relative w-full max-w-xs p-4">
                                                  {/* Floating Icon Badge */}
-                                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+                                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2">
                                                         <div className="relative group">
                                                                <div className="absolute inset-0 bg-primary/40 blur-xl rounded-full animate-pulse-slow" />
                                                                <div className="w-20 h-20 bg-gradient-to-br from-primary to-coral rounded-full flex items-center justify-center border-[6px] border-slate-950 shadow-2xl relative z-10 animate-float">
@@ -333,14 +333,14 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                                                         </div>
                                                  </div>
 
-                                                 <div className="mt-8 text-center space-y-4">
+                                                 <div className="mt-12 text-center space-y-4">
                                                         <div>
-                                                               <h2 className="text-3xl font-black text-white mb-2 tracking-tighter drop-shadow-lg">
+                                                               <h2 className="text-4xl font-black text-white mb-3 tracking-tighter drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
                                                                       马生模拟器 v2026
                                                                </h2>
-                                                               <p className="text-white/60 text-sm leading-relaxed font-mono">
+                                                               <p className="text-white text-sm leading-relaxed font-mono font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
                                                                       谨慎分配你的牛马力<br />
-                                                                      <span className="text-[10px] opacity-40 tracking-widest">ALLOCATE RESOURCES CAREFULLY</span>
+                                                                      <span className="text-[10px] opacity-80 tracking-widest text-white">ALLOCATE RESOURCES CAREFULLY</span>
                                                                </p>
                                                         </div>
 

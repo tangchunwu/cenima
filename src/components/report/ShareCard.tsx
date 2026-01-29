@@ -210,11 +210,11 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
         <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-inner">
           <QRCodeCanvas
             value={battleLink || window.location.href}
-            size={80}
+            size={100}
             bgColor={"#ffffff"}
-            fgColor={"#1e293b"}
-            level={"L"}
-            includeMargin={false}
+            fgColor={"#000000"}
+            level={"M"}
+            includeMargin={true}
           />
         </div>
         <p className="text-[10px] text-slate-300 mt-2">2026 马生模拟器</p>

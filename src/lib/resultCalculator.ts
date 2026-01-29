@@ -25,11 +25,7 @@ export interface TagResult {
   populationPercentage: number; // 人群占比
 }
 
-// 辅助函数：Hex 转 Tailwind Arbitrary Gradient
-function hexToGradient(hex: string): string {
-  // 为了产生一点渐变效果，我们可以简单地用同一个颜色，或者混入一点变化（这里简化处理）
-  return `from-[${hex}] via-[${hex}] to-[${hex}]`;
-}
+
 
 // 将 HorseDef 转换为 TagResult
 export const tagCombinations: Record<string, TagResult> = {};
@@ -50,7 +46,7 @@ horses.forEach(h => {
     keyword2025: '马到成功',
     prediction2026: `2026年，${h.shortDesc.replace(/["']/g, '')}`,
     emoji: '🐴',
-    color: hexToGradient(h.color),
+    color: h.color,
     image: h.image,
     rarity: (h.attributes.卷度 > 90 || h.attributes.摸鱼指数 > 90) ? 'SSR' : 'R',
     populationPercentage: Math.floor(Math.random() * 10) + 1

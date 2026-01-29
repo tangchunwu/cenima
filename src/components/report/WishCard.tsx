@@ -1,6 +1,8 @@
 import { ReportCard } from './ReportCard';
 import { useState } from 'react';
-import { Target, CheckCircle2, Flag } from 'lucide-react';
+import { Target, CheckCircle2, Flag, Pen } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { useSound } from '@/contexts/SoundContext';
 
 interface WishCardProps {
   content: string;
@@ -8,6 +10,7 @@ interface WishCardProps {
 
 export const WishCard = ({ content }: WishCardProps) => {
   const [isLitUp, setIsLitUp] = useState(false);
+  const { playClick } = useSound();
 
   return (
     <ReportCard className="text-center bg-slate-50 text-slate-800 border-2 border-emerald-500/30 relative overflow-hidden">
@@ -47,22 +50,41 @@ export const WishCard = ({ content }: WishCardProps) => {
           </div>
         </div>
 
-        {/* 状态文案 */}
-        <div className="bg-emerald-50/50 rounded-lg p-3">
+        {/* 交互区域 */}
+        <div className="bg-emerald-50/50 rounded-lg p-3 relative min-h-[60px] flex items-center justify-center">
           {isLitUp ? (
-            <div className="space-y-1 animate-fade-in">
+            <div className="space-y-1 animate-fade-in relative z-10">
               <div className="flex items-center justify-center gap-2 text-emerald-600 font-bold">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>方案已通过</span>
+                <span>方案已生效</span>
               </div>
               <p className="text-slate-500 text-xs">
-                已调配全宇宙能量为您助攻
+                全宇宙能量正在汇聚中...
               </p>
+
+              {/* 盖章动画 */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-16 border-4 border-red-500/30 text-red-500/30 rounded flex items-center justify-center font-black text-xl -rotate-12 animate-in zoom-in duration-300 pointer-events-none whitespace-nowrap">
+                APPROVED
+              </div>
             </div>
           ) : (
-            <p className="text-slate-400 text-xs font-bold uppercase">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLitUp(true);
+                playClick();
+                confetti({
+                  particleCount: 60,
+                  spread: 70,
+                  origin: { y: 0.7 },
+                  colors: ['#10b981', '#34d399', '#6ee7b7']
+                });
+              }}
+              className="group flex items-center gap-2 px-6 py-2 bg-emerald-100/50 hover:bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold uppercase transition-all active:scale-95"
+            >
+              <Pen className="w-3 h-3 group-hover:rotate-12 transition-transform" />
               点击签署治疗方案
-            </p>
+            </button>
           )}
         </div>
 

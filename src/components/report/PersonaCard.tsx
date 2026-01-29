@@ -8,27 +8,13 @@ interface PersonaCardProps {
        result: TagResult;
 }
 
-// 根据结果类型返回不同的渐变色
+// 辅助函数：生成渐变
 const getGradientByResult = (color: string) => {
-       // 从 result.color 提取主色调
-       if (color.includes('yellow')) return 'linear-gradient(145deg, #FFD700aa 0%, #FFA50066 100%)';
-       if (color.includes('blue')) return 'linear-gradient(145deg, #4169E1aa 0%, #00BFFFaa 100%)';
-       if (color.includes('purple')) return 'linear-gradient(145deg, #9370DBaa 0%, #DA70D6aa 100%)';
-       if (color.includes('green')) return 'linear-gradient(145deg, #32CD32aa 0%, #98FB98aa 100%)';
-       if (color.includes('red') || color.includes('orange')) return 'linear-gradient(145deg, #FF6347aa 0%, #FF8C00aa 100%)';
-       if (color.includes('pink')) return 'linear-gradient(145deg, #FF69B4aa 0%, #FFB6C1aa 100%)';
-       return 'linear-gradient(145deg, #60496e8c 0%, #71C4FF44 100%)';
+       return `linear-gradient(145deg, ${color}aa 0%, ${color}44 100%)`;
 };
 
-// 根据结果类型返回不同的发光颜色
 const getGlowByResult = (color: string) => {
-       if (color.includes('yellow')) return 'rgba(255, 215, 0, 0.6)';
-       if (color.includes('blue')) return 'rgba(65, 105, 225, 0.6)';
-       if (color.includes('purple')) return 'rgba(147, 112, 219, 0.6)';
-       if (color.includes('green')) return 'rgba(50, 205, 50, 0.6)';
-       if (color.includes('red') || color.includes('orange')) return 'rgba(255, 99, 71, 0.6)';
-       if (color.includes('pink')) return 'rgba(255, 105, 180, 0.6)';
-       return 'rgba(125, 190, 255, 0.67)';
+       return `${color}66`; // 40% opacity
 };
 
 export const PersonaCard = ({ result }: PersonaCardProps) => {

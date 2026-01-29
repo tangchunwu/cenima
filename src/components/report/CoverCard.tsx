@@ -41,7 +41,10 @@ export const CoverCard = ({ result }: CoverCardProps) => {
         {/* 核心形象展示 (马图片) */}
         <div className="relative py-2 min-h-[180px] flex items-center justify-center">
           {/* 背景装饰 */}
-          <div className={`absolute inset-0 bg-gradient-to-b ${result.color} opacity-10 rounded-xl blur-lg scale-90`} />
+          <div
+            className="absolute inset-0 opacity-10 rounded-xl blur-lg scale-90"
+            style={{ background: `linear-gradient(to bottom, ${result.color}, transparent)` }}
+          />
           <Fingerprint className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 text-slate-900/5 rotate-12" />
 
           <div className="relative z-10 w-full max-w-[240px] aspect-square mx-auto transform hover:scale-105 transition-transform duration-500">
@@ -72,7 +75,10 @@ export const CoverCard = ({ result }: CoverCardProps) => {
           <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">
             {t('report.diagnosis')}
           </p>
-          <p className={`text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r ${result.color} filter drop-shadow-sm`}>
+          <p
+            className="text-5xl font-black text-transparent bg-clip-text filter drop-shadow-sm"
+            style={{ backgroundImage: `linear-gradient(to right, ${result.color}, ${result.color}88)` }}
+          >
             {result.mainTag}
           </p>
         </div>

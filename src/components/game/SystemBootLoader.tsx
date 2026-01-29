@@ -104,7 +104,7 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                                                         autoFocus
                                                         value={command}
                                                         onChange={(e) => setCommand(e.target.value)}
-                                                        className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-white placeholder:text-green-500/30 uppercase"
+                                                        className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-white placeholder:text-green-500/60 uppercase"
                                                         placeholder={t('boot.placeholder')}
                                                  />
                                                  <Button type="submit" size="icon" variant="ghost" className="hover:bg-green-500/20 text-green-500">

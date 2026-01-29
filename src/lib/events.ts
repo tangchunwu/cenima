@@ -8,8 +8,9 @@ export interface LifeEvent {
        title: string;
        description: string;
        emoji: string;
-       image?: string; // 霓虹塔罗插图路径
+       image?: string;
        category: 'work' | 'social' | 'life' | 'random';
+       isKey?: boolean; // 关键事件，权重翻倍
        optionA: {
               text: string;
               effects: { money?: number; hair?: number; iq?: number; happiness?: number };
@@ -20,23 +21,25 @@ export interface LifeEvent {
        };
 }
 
-const lifeEventsZh: LifeEvent[] = [
+export const lifeEventsZh: LifeEvent[] = [
        // ===== 职场类 =====
        {
               id: 'work_996',
               title: '996 邀请函',
               description: '老板邀请你加入核心项目，需要996但承诺年终奖翻倍',
               emoji: '💼',
-              image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop', // Building
+              image: '/images/events/work_996.png',
               category: 'work',
-              optionA: { text: '接受挑战', effects: { money: 25, hair: -20, happiness: -10 } },
-              optionB: { text: '婉拒保命', effects: { happiness: 10, money: -5 } },
+              isKey: true,
+              optionA: { text: '接受挑战', effects: { money: 30, hair: -25, happiness: -15 } },
+              optionB: { text: '婉拒保命', effects: { happiness: 15, money: -5 } },
        },
        {
               id: 'work_promotion',
               title: '晋升机会',
               description: '有个管理岗位空缺，但需要你负责更多事务',
               emoji: '📈',
+              image: '/images/events/work_promotion.png',
               category: 'work',
               optionA: { text: '冲！', effects: { money: 20, iq: 10, hair: -15, happiness: -5 } },
               optionB: { text: '躺平挺好', effects: { happiness: 15, hair: 5 } },
@@ -46,7 +49,7 @@ const lifeEventsZh: LifeEvent[] = [
               title: '紧急 Deadline',
               description: '项目要提前交付，需要连续加班三天',
               emoji: '⏰',
-              image: 'https://images.unsplash.com/photo-1506784317898-7104416f6b35?q=80&w=800&auto=format&fit=crop', // Clock/Time
+              image: '/images/events/work_deadline.png',
               category: 'work',
               optionA: { text: '熬夜赶工', effects: { money: 15, hair: -25, happiness: -15 } },
               optionB: { text: '申请延期', effects: { iq: 10, money: -10 } },
@@ -56,8 +59,9 @@ const lifeEventsZh: LifeEvent[] = [
               title: '副业机会',
               description: '朋友邀请你一起做个小项目，可能赚钱也可能白忙',
               emoji: '🚀',
+              image: '/images/events/work_side.png',
               category: 'work',
-              optionA: { text: '搞起来', effects: { money: 20, hair: -10, iq: 5 } },
+              optionA: { text: '搞起来', effects: { money: 25, hair: -10, iq: 5 } },
               optionB: { text: '专注主业', effects: { happiness: 10, hair: 5 } },
        },
 
@@ -67,9 +71,10 @@ const lifeEventsZh: LifeEvent[] = [
               title: '周末聚会',
               description: '朋友喊你周末去 KTV，你已经累了一周',
               emoji: '🎤',
-              image: 'https://images.unsplash.com/photo-1514525253440-b393452e2729?q=80&w=800&auto=format&fit=crop', // Party
+              image: '/images/events/social_party.png',
               category: 'social',
-              optionA: { text: '嗨起来', effects: { happiness: 20, money: -15, hair: -5 } },
+              isKey: true,
+              optionA: { text: '嗨起来', effects: { happiness: 25, money: -20, hair: -5 } },
               optionB: { text: '在家躺着', effects: { hair: 10, happiness: -5 } },
        },
        {
@@ -77,17 +82,17 @@ const lifeEventsZh: LifeEvent[] = [
               title: '心动约会',
               description: '有个心仪的人约你吃饭，但今晚你有个重要会议',
               emoji: '💕',
-              image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=800&auto=format&fit=crop', // Neon Date
+              image: '/images/events/social_date.png',
               category: 'social',
               optionA: { text: '赴约！', effects: { happiness: 25, money: -10, iq: -5 } },
-              optionB: { text: '工作优先', effects: { money: 10, happiness: -15 } },
+              optionB: { text: '工作优先', effects: { money: 15, happiness: -20 } },
        },
        {
               id: 'social_help',
               title: '朋友求助',
               description: '好友搬家需要帮忙，但你周末本来想休息',
               emoji: '📦',
-              image: 'https://images.unsplash.com/photo-1600585152915-d208bec867a1?q=80&w=800&auto=format&fit=crop', // Boxes
+              image: '/images/events/social_help.png',
               category: 'social',
               optionA: { text: '义气相挺', effects: { happiness: 15, hair: -10 } },
               optionB: { text: '找借口推掉', effects: { hair: 10, happiness: -10, iq: -5 } },
@@ -97,8 +102,9 @@ const lifeEventsZh: LifeEvent[] = [
               title: '红色炸弹',
               description: '收到婚礼请柬，份子钱不便宜',
               emoji: '💒',
+              image: '/images/events/social_wedding.png',
               category: 'social',
-              optionA: { text: '出席送祝福', effects: { happiness: 10, money: -20 } },
+              optionA: { text: '出席送祝福', effects: { happiness: 10, money: -25 } },
               optionB: { text: '随个红包算了', effects: { money: -10, happiness: -5 } },
        },
 
@@ -108,6 +114,7 @@ const lifeEventsZh: LifeEvent[] = [
               title: '健身计划',
               description: '办了健身卡，今天要不要去练一下？',
               emoji: '🏋️',
+              image: '/images/events/life_gym.png',
               category: 'life',
               optionA: { text: '撸铁！', effects: { hair: 15, happiness: 10, iq: 5 } },
               optionB: { text: '明天再说', effects: { happiness: 5, hair: -5 } },
@@ -117,7 +124,7 @@ const lifeEventsZh: LifeEvent[] = [
               title: '外卖诱惑',
               description: '深夜饿了，是吃炸鸡还是忍一忍？',
               emoji: '🍗',
-              image: 'https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=800&auto=format&fit=crop', // Food
+              image: '/images/events/life_takeout.png',
               category: 'life',
               optionA: { text: '吃！减什么肥', effects: { happiness: 15, hair: -5, money: -5 } },
               optionB: { text: '喝杯水睡觉', effects: { hair: 10, iq: 5 } },
@@ -127,8 +134,9 @@ const lifeEventsZh: LifeEvent[] = [
               title: '熬夜刷剧',
               description: '追的剧更新了，但已经凌晨1点',
               emoji: '📺',
+              image: '/images/events/life_sleep.png',
               category: 'life',
-              optionA: { text: '先看两集', effects: { happiness: 15, hair: -15, iq: -5 } },
+              optionA: { text: '先看两集', effects: { happiness: 15, hair: -20, iq: -5 } },
               optionB: { text: '明天再看', effects: { hair: 10, iq: 5 } },
        },
        {
@@ -136,8 +144,10 @@ const lifeEventsZh: LifeEvent[] = [
               title: '购物车召唤',
               description: '双十一到了，购物车里的东西在呼唤你',
               emoji: '🛒',
+              image: '/images/events/life_shopping.png',
               category: 'life',
-              optionA: { text: '清空购物车', effects: { happiness: 20, money: -25 } },
+              isKey: true,
+              optionA: { text: '清空购物车', effects: { happiness: 30, money: -40 } },
               optionB: { text: '理性消费', effects: { money: 10, happiness: -5 } },
        },
        {
@@ -145,9 +155,10 @@ const lifeEventsZh: LifeEvent[] = [
               title: '猫咪生病',
               description: '毛孩子精神不太好，带去医院花费可能不少',
               emoji: '😿',
+              image: '/images/events/life_pet.png',
               category: 'life',
-              optionA: { text: '立刻送医', effects: { money: -20, happiness: 10, iq: 5 } },
-              optionB: { text: '先观察一下', effects: { happiness: -15 } },
+              optionA: { text: '立刻送医', effects: { money: -25, happiness: 10, iq: 5 } },
+              optionB: { text: '先观察一下', effects: { happiness: -20 } },
        },
 
        // ===== 随机类 =====
@@ -156,6 +167,7 @@ const lifeEventsZh: LifeEvent[] = [
               title: '彩票站',
               description: '路过彩票站，要不要买一注？',
               emoji: '🎰',
+              image: '/images/events/random_lottery.png',
               category: 'random',
               optionA: { text: '来一注', effects: { money: -5, happiness: 10 } },
               optionB: { text: '不赌为赢', effects: { iq: 5 } },
@@ -185,8 +197,9 @@ const lifeEventsZh: LifeEvent[] = [
               description: '同事推荐了一个"稳赚不赔"的投资',
               emoji: '📊',
               category: 'random',
+              isKey: true,
               optionA: { text: '跟一把', effects: { money: 30, iq: -10, happiness: -5 } },
-              optionB: { text: '谨慎拒绝', effects: { iq: 10, money: 5 } },
+              optionB: { text: '谨慎拒绝', effects: { iq: 15, money: 5 } },
        },
        {
               id: 'random_coffee',
@@ -204,12 +217,13 @@ const lifeEventsZh: LifeEvent[] = [
               emoji: '🚪',
               image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop', // Door
               category: 'random',
-              optionA: { text: '冲动辞职', effects: { happiness: 30, money: -30, hair: 20 } },
-              optionB: { text: '忍忍再说', effects: { money: 10, happiness: -10, hair: -10 } },
+              isKey: true,
+              optionA: { text: '冲动辞职', effects: { happiness: 40, money: -40, hair: 20 } },
+              optionB: { text: '忍忍再说', effects: { money: 15, happiness: -15, hair: -10 } },
        },
 ];
 
-const lifeEventsEn: LifeEvent[] = [
+export const lifeEventsEn: LifeEvent[] = [
        // ===== Work =====
        {
               id: 'work_996',

@@ -62,7 +62,7 @@ export const MemoryCleaner = ({ onClean }: MemoryCleanerProps) => {
                                                  value={input}
                                                  onChange={(e) => setInput(e.target.value)}
                                                  placeholder={t('cleaner.placeholder')}
-                                                 className="bg-black/50 border-red-900/50 text-white placeholder:text-red-500/20 font-mono"
+                                                 className="w-full bg-slate-900/50 border-2 border-red-500/30 rounded-xl px-4 py-3 text-white placeholder:text-white/50 focus:border-red-500 transition-colors text-lg"
                                                  autoFocus
                                           />
                                    </div>

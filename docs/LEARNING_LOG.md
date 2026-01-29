@@ -143,4 +143,115 @@ Tailwind 使用 Purge/Tree-Shaking 机制，在编译时扫描代码文件。如
 
 ---
 
+### 🎨 2026-01-29：使用 shadcn CLI 安装第三方组件
+
+#### **1. 需求背景**
+想给网站添加一个炫酷的鼠标跟随水花特效 (SplashCursor)，提升用户体验和视觉感受。
+
+#### **2. 技术发现**
+原来 `shadcn` 不仅可以安装官方组件，还可以安装第三方社区组件！
+
+*   **官方组件**：如 `button`, `card`, `dialog` 等
+*   **第三方组件**：如 `@react-bits/SplashCursor-JS-CSS`
+
+#### **3. 安装步骤**
+```bash
+# 使用 shadcn CLI 安装第三方组件
+npx shadcn@latest add @react-bits/SplashCursor-JS-CSS
+```
+
+执行后，组件会被自动下载到 `src/components/` 目录下。
+
+#### **4. 使用方法**
+```tsx
+// 在 App.tsx 或全局布局组件中导入
+import SplashCursor from '@/components/SplashCursor'
+
+// 在 JSX 中使用（放在根组件即可全局生效）
+<SplashCursor />
+```
+
+#### **5. shadcn 的本质**
+> **💡 关键认知**：`shadcn` **不是一个 npm 包**，而是一个**代码复制工具 (Code CLI)**。
+>
+> 它不像 `antd` 或 `mui` 那样把组件打包成 node_modules 依赖，而是把组件的**源代码直接复制**到你的项目里。
+>
+> *   **优点**：你拥有组件的完整源码，可以随意修改样式和逻辑。
+> *   **缺点**：不会自动更新，如果官方修了 bug，你需要手动更新。
+
+#### **6. @react-bits 是什么？**
+`@react-bits` 是一个开源的 React 组件库集合，专门提供各种**视觉特效组件**，比如：
+*   `SplashCursor`：鼠标水花特效
+*   `Aurora`：极光背景
+*   `Particles`：粒子效果
+*   等等...
+
+这些组件都可以通过 shadcn CLI 一键安装。
+
+> **💡 经验教训**：当你想要某个 UI 特效时，先去搜搜有没有现成的 shadcn 兼容组件，很可能一行命令就搞定了，不用自己从头写！
+
+#### **7. 实际应用：卡片堆叠翻转效果**
+在游戏模式的 LifeEditor 组件中，我们实现了卡片堆叠翻转效果：
+
+```tsx
+// 1. 堆叠的卡片背景 - 通过绝对定位和 scale/translateY 创建层次感
+{[...Array(Math.min(3, remainingCards))].map((_, i) => (
+  <motion.div
+    style={{ 
+      zIndex: -i - 1,
+      scale: 1 - (i + 1) * 0.03,
+      y: -(i + 1) * 8,
+      rotateX: (i + 1) * 2
+    }}
+  />
+))}
+
+// 2. 当前卡片翻转动画 - 使用 rotateY 实现3D翻转
+<motion.div
+  initial={{ rotateY: 90, opacity: 0 }}
+  animate={{ rotateY: 0, opacity: 1 }}
+  exit={{ rotateY: -90, opacity: 0 }}
+  style={{ transformStyle: 'preserve-3d' }}
+/>
+```
+
+**关键技术点**：
+*   `perspective: 1000px`：给父容器添加透视，让子元素的3D变换有立体感
+*   `transformStyle: 'preserve-3d'`：保持3D变换效果
+*   `rotateY`：水平翻转动画
+*   `rotateY`：水平翻转动画
+*   `rotateX`：轻微倾斜，模拟卡片堆叠的视角
+
+#### **8. CSS 排板：长链接溢出处理**
+在分享卡片中，由于自动生成的 URL 包含大量参数变得非常长，导致在移动端撑破了容器宽度。
+*   **问题**：默认的 `whitespace-pre-line` 只处理换行符，不处理长单词（URL被视为一个长单词）。
+*   **修复**：添加 `break-all` 类（或 `word-break: break-all`）。
+    ```html
+    <p className="break-all">...</p>
+    ```
+    这样可以强制长链接在任意字符处换行，防止布局破坏。
+
+#### **9. 视觉优化：图表升级**
+在 `HealthScoreCard` 中，我们将简单的进度条升级为雷达图 (`DimensionRadarChart`)。
+*   **优势**：雷达图能更直观地展示多维数据的平衡性，且科技感更强。
+*   **实现**：使用 `recharts` 库，配合 `ResponsiveContainer` 确保自适应。
+*   **布局**：将雷达图作为视觉中心，原有进度条作为详细数据补充，形成“总-分”结构。
+
+#### **10. 交互升级：Reigns 式滑动决策**
+为了增强游戏趣味性，我们将简单的点击交互升级为 Tinder/Reigns 风格的卡片滑动决策。
+*   **挑战**：如何精确控制拖拽手感，避免误触。
+*   **方案**：使用 `framer-motion` 的 `useMotionValue` 和 `useTransform`。
+    *   `x` 位移驱动 `rotate` (旋转) 和 `opacity` (透明度) 变化。
+    *   `drag="x"` 限制水平拖动。
+    *   通过 `dragConstraints` 和 `onDragEnd` 判断滑动意图。
+    ```tsx
+    const x = useMotionValue(0);
+    const rotate = useTransform(x, [-200, 200], [-30, 30]); 
+    // ...
+    <motion.div drag="x" style={{ x, rotate }}>
+    ```
+*   **收获**：物理模拟的交互能显著提升沉浸感，比纯粹的 CSS 动画更生动。
+
+---
+
 *文档持续更新中...*

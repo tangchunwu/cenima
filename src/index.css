@@ -84,7 +84,7 @@
     --border: 240 15% 25%;
     --input: 240 15% 25%;
     --ring: 350 85% 70%;
-    
+
     --coral: 15 85% 60%;
     --cream: 45 20% 20%;
   }
@@ -101,22 +101,28 @@
   }
 
   /* 圆润有趣的标题风格 */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 800;
     letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
+
   /* 卡通风阴影 */
   .shadow-cartoon {
-    box-shadow: 0 8px 0 hsl(var(--primary) / 0.15), 
-                0 12px 40px hsl(var(--primary) / 0.1);
+    box-shadow: 0 8px 0 hsl(var(--primary) / 0.15),
+      0 12px 40px hsl(var(--primary) / 0.1);
   }
 
   .shadow-cartoon-sm {
-    box-shadow: 0 4px 0 hsl(var(--primary) / 0.1), 
-                0 8px 20px hsl(var(--primary) / 0.08);
+    box-shadow: 0 4px 0 hsl(var(--primary) / 0.1),
+      0 8px 20px hsl(var(--primary) / 0.08);
   }
 
   /* 可爱的浮动动画 */
@@ -164,30 +170,40 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes bounce-slow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }
 }
 
 @keyframes wiggle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(-5deg);
   }
+
   75% {
     transform: rotate(5deg);
   }
@@ -198,6 +214,7 @@
     transform: scale(0.8);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -205,10 +222,13 @@
 }
 
 @keyframes sparkle {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.1);
@@ -216,10 +236,125 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 0 40px hsl(var(--primary) / 0.2);
   }
+
   50% {
     box-shadow: 0 0 30px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.3);
+  }
+}
+
+/* AI Loader Animations */
+.loader-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  animation: loader-rotate 2s linear infinite;
+}
+
+.loader-letter {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  animation: loader-letter-anim 2s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.loader-letter:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.loader-letter:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loader-letter:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.loader-letter:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.loader-letter:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.loader-letter:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.loader-letter:nth-child(7) {
+  animation-delay: 0.7s;
+}
+
+.loader-letter:nth-child(8) {
+  animation-delay: 0.8s;
+}
+
+.loader-letter:nth-child(9) {
+  animation-delay: 0.9s;
+}
+
+.loader-letter:nth-child(10) {
+  animation-delay: 1.0s;
+}
+
+@keyframes loader-rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+    box-shadow: 0 10px 20px 0 rgba(255, 255, 255, 0.2) inset,
+      0 20px 30px 0 rgba(173, 95, 255, 0.2) inset,
+      0 60px 60px 0 rgba(71, 30, 236, 0.2) inset;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg);
+    box-shadow: 0 10px 20px 0 rgba(255, 255, 255, 0.4) inset,
+      0 20px 10px 0 rgba(214, 10, 71, 0.4) inset,
+      0 40px 60px 0 rgba(49, 30, 128, 0.4) inset;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+    box-shadow: 0 10px 20px 0 rgba(255, 255, 255, 0.2) inset,
+      0 20px 30px 0 rgba(173, 95, 255, 0.2) inset,
+      0 60px 60px 0 rgba(71, 30, 236, 0.2) inset;
+  }
+}
+
+@keyframes loader-letter-anim {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
   }
 }

@@ -98,8 +98,16 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
 
         {/* 核心展示区 */}
         <div className="space-y-2">
-          <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-            <div className="text-4xl">{result.emoji}</div>
+          <div className="w-24 h-24 mx-auto bg-slate-50 rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
+            {result.image ? (
+              <img
+                src={result.image}
+                alt={result.mainTag}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-4xl">{result.emoji}</div>
+            )}
           </div>
           <div>
             <p className="text-xs text-slate-400 font-bold uppercase">Diagnosis Confirmed</p>
@@ -126,7 +134,7 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
         {/* 预览卡片 */}
         <div className="bg-slate-50 rounded-xl p-4 text-left border border-slate-200 relative">
           <Stethoscope className="absolute -top-3 -left-2 w-6 h-6 text-slate-400 transform -rotate-12 bg-white rounded-full p-1 border border-slate-200" />
-          <p className="text-sm text-slate-600 font-medium whitespace-pre-line leading-relaxed selection:bg-red-100">{shareText}</p>
+          <p className="text-sm text-slate-600 font-medium whitespace-pre-line leading-relaxed selection:bg-red-100 break-all">{shareText}</p>
         </div>
 
         {/* 按钮组 */}

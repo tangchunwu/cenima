@@ -3,13 +3,15 @@ import { useSurvey } from "@/hooks/useSurvey";
 import { FloatingElements } from "@/components/decorations/FloatingElements";
 import { ParticipantCounter } from "@/components/decorations/ParticipantCounter";
 import { CoverCard } from "@/components/report/CoverCard";
-import { TagCard } from "@/components/report/TagCard";
+
 import { RegretCard } from "@/components/report/RegretCard";
 import { WishCard } from "@/components/report/WishCard";
 import { HealthScoreCard } from "@/components/report/HealthScoreCard";
 import { ShareCard } from "@/components/report/ShareCard";
 import { DataCard } from "@/components/report/DataCard";
-import { PrescriptionCard } from "@/components/report/PrescriptionCard";
+import { PersonaCard } from "@/components/report/PersonaCard";
+import { RegretWishCard } from "@/components/report/RegretWishCard";
+
 import { calculateHealthIndices } from "@/lib/resultCalculator";
 import { LiveUpdates } from "@/components/home/LiveUpdates";
 import { CampSelection, Camp } from "@/components/home/CampSelection";
@@ -27,6 +29,7 @@ import { LifeEditor } from "@/components/game/LifeEditor";
 import { MemoryCleaner } from "@/components/game/MemoryCleaner";
 import { SystemBootLoader } from "@/components/game/SystemBootLoader";
 import { GameAttributes } from "@/lib/gameResultMapper";
+import { AiLoader } from "@/components/ui/ai-loader";
 
 // Lazy Load Heavy Components
 const Pokedex = lazy(() => import("@/components/home/Pokedex").then(module => ({ default: module.Pokedex })));
@@ -123,11 +126,13 @@ const Index = () => {
     }
   }, [appState]);
 
+
+
   // 初始加载状态
   if (survey.isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin text-4xl">🔮</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <AiLoader className="scale-75" />
       </div>
     );
   }
@@ -200,7 +205,7 @@ const Index = () => {
   // 首页 - 挑衅式设计
   if (appState === "home") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+      <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
         <FloatingElements />
         <BackgroundEffect />
         <Suspense fallback={null}>
@@ -302,7 +307,7 @@ const Index = () => {
   // 阵营选择页面
   if (appState === "camp") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen relative overflow-hidden">
         <FloatingElements />
 
         {/* 返回按钮 */}
@@ -332,18 +337,18 @@ const Index = () => {
   // 游戏页面 (替代原 Survey)
   if (appState === "game") {
     return (
-      <div className="min-h-screen bg-slate-950 relative overflow-hidden text-white font-sans flex items-center justify-center">
+      <div className="min-h-screen relative overflow-hidden text-white font-sans flex items-center justify-center">
         {/* 故障背景动画 */}
         <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-[0.03] pointer-events-none mix-blend-screen" />
 
         {/* 游戏主界面 */}
         <div className="w-full max-w-lg relative z-10">
           <div className="text-center mb-8 space-y-2">
-            <h1 className="text-3xl font-black tracking-tighter glitch-text" data-text="LIFE_EDITOR_v2.0">
-              LIFE_EDITOR_v2.0
+            <h1 className="text-3xl font-black tracking-tighter glitch-text" data-text="牛马人生编辑器">
+              牛马人生编辑器
             </h1>
             <p className="text-slate-500 font-mono text-xs">
-              &gt; ALLOCATE_RESOURCES_CAREFULLY
+              &gt; 谨慎分配你的资源
             </p>
           </div>
 
@@ -370,14 +375,14 @@ const Index = () => {
   // 加载页面
   if (appState === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
         <FloatingElements />
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/30 rounded-full blur-3xl animate-pulse" />
         </div>
 
         <div className="text-center space-y-6 animate-fade-in z-10">
-          <div className="text-7xl animate-bounce-slow">🔮</div>
+          <AiLoader className="scale-75 mb-8" />
           <h2 className="text-2xl font-bold text-white">{loadingMessage || '正在重构人格数据...'}</h2>
           <p className="text-white/60">系统正在写入您的2026启动指令...</p>
         </div>
@@ -388,7 +393,7 @@ const Index = () => {
   // 反应页面
   if (appState === "reaction" && survey.result) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      <div className="min-h-screen relative overflow-hidden">
         <FloatingElements />
         <div className="absolute inset-0">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -451,10 +456,8 @@ const Index = () => {
 
     const reportCards = [
       <CoverCard key="cover" result={survey.result} />,
-      <TagCard key="tag" result={survey.result} />,
+      <PersonaCard key="persona" result={survey.result} />,
       <HealthScoreCard key="health" result={survey.result} indices={healthIndices} />,
-      <DataCard key="data" result={survey.result} answers={survey.answers} />,
-      <PrescriptionCard key="rx" result={survey.result} />,
     ];
 
     // 如果是挑战模式，插入对战卡片到最前面
@@ -469,17 +472,18 @@ const Index = () => {
     const regretAnswer = survey.openAnswers?.['open_regret'];
     const wishAnswer = survey.openAnswers?.['open_wish'];
 
-    if (regretAnswer) {
-      reportCards.push(<RegretCard key="regret" content={regretAnswer} />);
-    }
-    if (wishAnswer) {
-      reportCards.push(<WishCard key="wish" content={wishAnswer} />);
+    if (regretAnswer && wishAnswer) {
+      reportCards.push(<RegretWishCard key="regret-wish" regret={regretAnswer} wish={wishAnswer} />);
+    } else {
+      // Fallback for partial data
+      if (regretAnswer) reportCards.push(<RegretCard key="regret" content={regretAnswer} />);
+      if (wishAnswer) reportCards.push(<WishCard key="wish" content={wishAnswer} />);
     }
 
     reportCards.push(<ShareCard key="share" result={survey.result} sessionId={survey.sessionId} />);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+      <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
         <FloatingElements />
 
         <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">

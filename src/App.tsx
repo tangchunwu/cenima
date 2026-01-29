@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import SplashCursor from "@/components/SplashCursor";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,8 @@ const App = () => (
     <ErrorBoundary>
       <TooltipProvider>
         <LanguageProvider>
+          <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-[#1a0b2e] to-slate-950 -z-10" />
+          <SplashCursor />
           <Toaster />
           <Sonner />
           <BrowserRouter>

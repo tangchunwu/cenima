@@ -8,7 +8,7 @@ import { RegretCard } from "@/components/report/RegretCard";
 import { WishCard } from "@/components/report/WishCard";
 import { ShareCard } from "@/components/report/ShareCard";
 import { DataCard } from "@/components/report/DataCard";
-import { PersonaCard } from "@/components/report/PersonaCard";
+// import { PersonaCard } from "@/components/report/PersonaCard";
 import { RegretWishCard } from "@/components/report/RegretWishCard";
 
 import { calculateHealthIndices } from "@/lib/resultCalculator";
@@ -458,7 +458,7 @@ const Index = () => {
 
     const reportCards = [
       <CoverCard key="cover" result={survey.result} />,
-      <PersonaCard key="persona" result={survey.result} />,
+      // <PersonaCard key="persona" result={survey.result} />,
     ];
 
     // 如果是挑战模式，插入对战卡片到最前面

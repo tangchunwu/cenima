@@ -127,10 +127,10 @@ export const EventCard = ({
                             <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                                    <motion.div
                                           className={`h-full rounded-full ${isCritical
-                                                        ? 'bg-red-500'
-                                                        : isUrgent
-                                                               ? 'bg-orange-500'
-                                                               : 'bg-gradient-to-r from-primary to-coral'
+                                                 ? 'bg-red-500'
+                                                 : isUrgent
+                                                        ? 'bg-orange-500'
+                                                        : 'bg-gradient-to-r from-primary to-coral'
                                                  }`}
                                           initial={{ width: '100%' }}
                                           animate={{ width: `${progress}%` }}

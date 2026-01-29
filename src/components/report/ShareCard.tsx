@@ -90,19 +90,19 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
         link={battleLink}
       />
 
-      <div className="space-y-6 pt-6">
+      <div className="space-y-3 pt-4">
         {/* 医院/机构抬头 */}
         <div className="flex flex-col items-center border-b border-slate-100 pb-4">
           <div className="bg-red-500 text-white rounded-full p-2 mb-2">
             <Hospital className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-black text-slate-800 tracking-tight">DISCHARGE SUMMARY</h2>
-          <p className="text-xs text-slate-400 font-bold uppercase">Patient Copy • Non-Official Document</p>
+          <h2 className="text-lg font-black text-slate-800 tracking-tight">DISCHARGE SUMMARY</h2>
+          <p className="text-[10px] text-slate-400 font-bold uppercase">Patient Copy • Non-Official Document</p>
         </div>
 
-        {/* 核心展示区 */}
-        <div className="space-y-2">
-          <div className="w-24 h-24 mx-auto bg-slate-50 rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
+        {/* 核心展示区 - 横向布局 */}
+        <div className="flex items-center gap-4 bg-slate-50/50 p-3 rounded-2xl border border-slate-100 text-left">
+          <div className="w-14 h-14 shrink-0 bg-white rounded-full flex items-center justify-center border-2 border-slate-200 shadow-sm overflow-hidden">
             {result.image ? (
               <img
                 src={result.image}
@@ -110,12 +110,12 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="text-4xl">{result.emoji}</div>
+              <div className="text-3xl">{result.emoji}</div>
             )}
           </div>
           <div>
-            <p className="text-xs text-slate-400 font-bold uppercase">Diagnosis Confirmed</p>
-            <h3 className="text-2xl font-black text-slate-900">{result.mainTag}</h3>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Diagnosis Confirmed</p>
+            <h3 className="text-lg font-black text-slate-900 leading-tight">{result.mainTag}</h3>
           </div>
         </div>
 
@@ -136,17 +136,17 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
         </div>
 
         {/* 预览卡片 */}
-        <div className="bg-slate-50 rounded-xl p-4 text-left border border-slate-200 relative">
+        <div className="bg-slate-50 rounded-xl p-3 text-left border border-slate-200 relative">
           <Stethoscope className="absolute -top-3 -left-2 w-6 h-6 text-slate-400 transform -rotate-12 bg-white rounded-full p-1 border border-slate-200" />
-          <p className="text-sm text-slate-600 font-medium whitespace-pre-line leading-relaxed selection:bg-red-100 break-all">{shareText}</p>
+          <p className="text-xs text-slate-600 font-medium whitespace-pre-line leading-relaxed selection:bg-red-100 break-all">{shareText}</p>
         </div>
 
         {/* 按钮组 */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <Button
             onClick={handleGeneratePoster}
             disabled={isGenerating}
-            className="w-full bg-slate-900 text-white hover:bg-slate-800 py-6 rounded-xl text-lg font-bold shadow-lg shadow-slate-200"
+            className="w-full bg-slate-900 text-white hover:bg-slate-800 py-3 rounded-xl text-base font-bold shadow-lg shadow-slate-200"
           >
             {isGenerating ? (
               <>
@@ -161,15 +161,6 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
             )}
           </Button>
 
-          <Button
-            onClick={handleShare}
-            variant="outline"
-            className="w-full py-6 rounded-xl text-lg border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          >
-            <Share2 className="w-5 h-5 mr-2" />
-            转发给病友
-          </Button>
-
           {/* 新增：发起挑战按钮 */}
           <Button
             onClick={() => {
@@ -178,32 +169,43 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
               navigator.clipboard.writeText(url);
               toast.success('挑战书链接已复制！发给Ta看看谁是真牛马');
             }}
-            className="w-full py-6 rounded-xl text-lg font-black bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-lg shadow-red-500/20 animate-pulse-slow"
+            className="w-full py-3 rounded-xl text-base font-black bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-lg shadow-red-500/20 animate-pulse-slow"
           >
-            <Swords className="w-5 h-5 mr-2" />
+            <Swords className="w-5 h-4 mr-2" />
             发起宿命对决 (VS)
           </Button>
 
-          <Button
-            variant="ghost"
-            onClick={handleCopy}
-            className="w-full py-4 text-slate-400 hover:text-slate-600 hover:bg-slate-50"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 mr-2 text-green-500" />
-                已复制
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4 mr-2" />
-                仅复制医嘱
-              </>
-            )}
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              className="w-full py-2 h-auto rounded-xl text-sm border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              转发给病友
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleCopy}
+              className="w-full py-2 h-auto rounded-xl text-sm border-2 border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  已复制
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-2" />
+                  仅复制医嘱
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center">
+      <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col items-center">
         <p className="text-xs text-slate-400 mb-3 font-bold uppercase tracking-widest">Scan to Diagnose</p>
         <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-inner">
           <QRCodeCanvas

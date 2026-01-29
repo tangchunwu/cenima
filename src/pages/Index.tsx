@@ -23,6 +23,8 @@ import { useCollection } from "@/hooks/useCollection";
 import { toast } from "sonner";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SoundToggle } from "@/components/ui/SoundToggle";
+import { DynamicSEO } from "@/components/common/DynamicSEO";
 
 // Game Mode Components
 import { LifeEditor } from "@/components/game/LifeEditor";
@@ -206,6 +208,7 @@ const Index = () => {
   if (appState === "home") {
     return (
       <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+        <DynamicSEO />
         <FloatingElements />
         <BackgroundEffect />
         <Suspense fallback={null}>
@@ -255,14 +258,17 @@ const Index = () => {
                 <span className="text-red-400 text-sm font-medium truncate">{t('home.warn_tag')}</span>
               </div>
 
-              {/* 语言切换按钮 - 右上角 */}
-              <button
-                onClick={toggleLanguage}
-                className="absolute top-6 right-6 z-50 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-all active:scale-95 text-white"
-              >
-                <Globe className="w-4 h-4 text-white/80" />
-                <span className="text-xs font-bold text-white/90">{t('ui.switch_lang')}</span>
-              </button>
+              {/* 顶部功能区 - 右上角 */}
+              <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+                <SoundToggle />
+                <button
+                  onClick={toggleLanguage}
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-all active:scale-95 text-white"
+                >
+                  <Globe className="w-4 h-4 text-white/80" />
+                  <span className="text-xs font-bold text-white/90">{t('ui.switch_lang')}</span>
+                </button>
+              </div>
 
               {/* 主要内容区域 */}
               <div className="text-center space-y-8 animate-fade-in w-full max-w-md">
@@ -394,6 +400,10 @@ const Index = () => {
   if (appState === "reaction" && survey.result) {
     return (
       <div className="min-h-screen relative overflow-hidden">
+        <DynamicSEO
+          title={`确诊: ${survey.result.mainTag}`}
+          description={`经过赛博诊断，我的2026年度人格是「${survey.result.mainTag}」。你也来测测？`}
+        />
         <FloatingElements />
         <div className="absolute inset-0">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -484,6 +494,10 @@ const Index = () => {
 
     return (
       <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+        <DynamicSEO
+          title={`${survey.result.mainTag} | 2026人设报告`}
+          description={`查看我的2026年度人设报告：${survey.result.mainTag}。测测你的？`}
+        />
         <FloatingElements />
 
         <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">

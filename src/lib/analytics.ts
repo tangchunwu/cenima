@@ -24,10 +24,10 @@ export const AnalyticsEvents = {
 
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
        // 1. 开发环境打 Log
-       if (isDev) {
-              console.groupCollapsed(`[Analytics] 📊 ${eventName}`);
-              console.log('Properties:', properties);
-              console.groupEnd();
+       if (import.meta.env.DEV) {
+              // 开发环境仅打印不上传
+              // console.log(`[Analytics] ${eventName}`, properties);
+              return;
        }
 
        // 2. 生产环境上报 (占位符)

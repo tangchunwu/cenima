@@ -75,7 +75,7 @@ const Index = () => {
       unlock(survey.result.mainTag);
 
       // Track completion
-      trackEvent(AnalyticsEvents.SURVEY_COMPLETE, {
+      trackEvent(AnalyticsEvents.GAME_COMPLETE, {
         result: survey.result.mainTag,
         camp: camp
       });

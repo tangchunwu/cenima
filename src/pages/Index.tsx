@@ -463,104 +463,105 @@ const Index = () => {
   if (appState === "result" && survey.result) {
     const healthIndices = calculateHealthIndices(survey.answers);
 
-    <CoverCard key="cover" result={survey.result} />,
+    const reportCards = [
+      <CoverCard key="cover" result={survey.result} />,
       <PersonaCard key="persona" result={survey.result} />,
     ];
 
-// 如果是挑战模式，插入对战卡片到最前面
-if (inviterInfo) {
-  reportCards.unshift(
-    <Suspense key="battle-suspense" fallback={<div className="h-96 w-full bg-black/20 animate-pulse rounded-xl" />}>
-      <BattleCard key="battle" result={survey.result} inviterInfo={inviterInfo} />
-    </Suspense>
-  );
-}
+    // 如果是挑战模式，插入对战卡片到最前面
+    if (inviterInfo) {
+      reportCards.unshift(
+        <Suspense key="battle-suspense" fallback={<div className="h-96 w-full bg-black/20 animate-pulse rounded-xl" />}>
+          <BattleCard key="battle" result={survey.result} inviterInfo={inviterInfo} />
+        </Suspense>
+      );
+    }
 
-const regretAnswer = survey.openAnswers?.['open_regret'];
-const wishAnswer = survey.openAnswers?.['open_wish'];
+    const regretAnswer = survey.openAnswers?.['open_regret'];
+    const wishAnswer = survey.openAnswers?.['open_wish'];
 
-if (regretAnswer && wishAnswer) {
-  reportCards.push(<RegretWishCard key="regret-wish" regret={regretAnswer} wish={wishAnswer} />);
-} else {
-  // Fallback for partial data
-  if (regretAnswer) reportCards.push(<RegretCard key="regret" content={regretAnswer} />);
-  if (wishAnswer) reportCards.push(<WishCard key="wish" content={wishAnswer} />);
-}
+    if (regretAnswer && wishAnswer) {
+      reportCards.push(<RegretWishCard key="regret-wish" regret={regretAnswer} wish={wishAnswer} />);
+    } else {
+      // Fallback for partial data
+      if (regretAnswer) reportCards.push(<RegretCard key="regret" content={regretAnswer} />);
+      if (wishAnswer) reportCards.push(<WishCard key="wish" content={wishAnswer} />);
+    }
 
-reportCards.push(<ShareCard key="share" result={survey.result} sessionId={survey.sessionId} />);
+    reportCards.push(<ShareCard key="share" result={survey.result} sessionId={survey.sessionId} />);
 
-return (
-  <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
-    <DynamicSEO
-      title={`${survey.result.mainTag} | 2026人设报告`}
-      description={`查看我的2026年度人设报告：${survey.result.mainTag}。测测你的？`}
-    />
-    <FloatingElements />
+    return (
+      <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+        <DynamicSEO
+          title={`${survey.result.mainTag} | 2026人设报告`}
+          description={`查看我的2026年度人设报告：${survey.result.mainTag}。测测你的？`}
+        />
+        <FloatingElements />
 
-    <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
-      {/* 卡片指示器 */}
-      <div className="flex justify-center gap-2 mb-4">
-        {reportCards.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setReportCardIndex(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${index === reportCardIndex
-              ? 'bg-primary w-8'
-              : 'bg-white/30 w-2 hover:bg-white/50'
-              }`}
-          />
-        ))}
-      </div>
+        <div className="container mx-auto px-4 py-6 flex flex-col min-h-screen relative z-10">
+          {/* 卡片指示器 */}
+          <div className="flex justify-center gap-2 mb-4">
+            {reportCards.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setReportCardIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${index === reportCardIndex
+                  ? 'bg-primary w-8'
+                  : 'bg-white/30 w-2 hover:bg-white/50'
+                  }`}
+              />
+            ))}
+          </div>
 
-      {/* 卡片容器 */}
-      <div className="flex-1 flex items-center justify-center relative">
-        {/* 左箭头 */}
-        {reportCardIndex > 0 && (
-          <button
-            onClick={() => setReportCardIndex(prev => prev - 1)}
-            className="absolute left-0 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-        )}
+          {/* 卡片容器 */}
+          <div className="flex-1 flex items-center justify-center relative">
+            {/* 左箭头 */}
+            {reportCardIndex > 0 && (
+              <button
+                onClick={() => setReportCardIndex(prev => prev - 1)}
+                className="absolute left-0 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6 text-white" />
+              </button>
+            )}
 
-        {/* 当前卡片 */}
-        <div className="w-full max-w-md animate-fade-in">
-          {reportCards[reportCardIndex]}
+            {/* 当前卡片 */}
+            <div className="w-full max-w-md animate-fade-in">
+              {reportCards[reportCardIndex]}
+            </div>
+
+            {/* 右箭头 */}
+            {reportCardIndex < reportCards.length - 1 && (
+              <button
+                onClick={() => setReportCardIndex(prev => prev + 1)}
+                className="absolute right-0 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
+              >
+                <ChevronRight className="w-6 h-6 text-white" />
+              </button>
+            )}
+          </div>
+
+          {/* 重测按钮 */}
+          <div className="flex flex-col items-center gap-4 py-4">
+            <Button
+              variant="ghost"
+              onClick={handleReset}
+              className="text-white/60 hover:text-white hover:bg-white/10"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              系统需要重新校准？(重测)
+            </Button>
+
+            <p className="text-xs text-white/30 animate-pulse pt-4">
+              提示：点击右下角 🍌 查看已收集的变异形态
+            </p>
+          </div>
         </div>
-
-        {/* 右箭头 */}
-        {reportCardIndex < reportCards.length - 1 && (
-          <button
-            onClick={() => setReportCardIndex(prev => prev + 1)}
-            className="absolute right-0 z-20 p-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
-          >
-            <ChevronRight className="w-6 h-6 text-white" />
-          </button>
-        )}
       </div>
-
-      {/* 重测按钮 */}
-      <div className="flex flex-col items-center gap-4 py-4">
-        <Button
-          variant="ghost"
-          onClick={handleReset}
-          className="text-white/60 hover:text-white hover:bg-white/10"
-        >
-          <RotateCcw className="w-4 h-4 mr-2" />
-          系统需要重新校准？(重测)
-        </Button>
-
-        <p className="text-xs text-white/30 animate-pulse pt-4">
-          提示：点击右下角 🍌 查看已收集的变异形态
-        </p>
-      </div>
-    </div>
-  </div>
-);
+    );
   }
 
-return null;
+  return null;
 };
 
 export default Index;

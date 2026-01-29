@@ -223,5 +223,33 @@ export const horses: HorseDef[] = [
               },
               color: '#FF5722',
               image: '/horses/elema.jpg'
+       },
+       {
+              id: 'caonima',
+              name: '草泥马',
+              description: '心中奔腾着一万只...的神兽。表面波澜不惊，内心疯狂输出。遇到傻X需求，你的第一反应不是"怎么做"，而是"？？？"。你拥有职场最强的精神防御机制——虽然我人在工位，但我的灵魂在呼伦贝尔大草原吃草。',
+              shortDesc: '"别惹我，我素质极高（划掉）"',
+              attributes: {
+                     摸鱼指数: 60,
+                     暴躁值: 100,
+                     干饭能力: 50,
+                     卷度: 10
+              },
+              color: '#E91E63',
+              image: '/horses/caonima.png'
+       },
+       {
+              id: 'heima',
+              name: '黑马',
+              description: '平时不显山不露水，关键时刻一鸣惊人。别人在吹牛逼的时候你在刷题，别人在抱怨的时候你在复盘。你是公司最大的变数，也是老板最后的底牌。所有人都以为你是青铜，其实你是藏在新手村的王者。',
+              shortDesc: '"要么不出手，出手必绝杀"',
+              attributes: {
+                     摸鱼指数: 20,
+                     暴躁值: 10,
+                     干饭能力: 40,
+                     卷度: 90
+              },
+              color: '#212121',
+              image: '/horses/heima.png'
        }
 ];

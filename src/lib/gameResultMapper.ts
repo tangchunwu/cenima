@@ -72,11 +72,16 @@ export function analyzeGameResult(attributes: GameAttributes, choices: ChoiceRec
        if (attributes.hair < 20) return '马bee'; // 秃了
 
        // --- 关键事件主导 ---
+       if (attributes.happiness < 30 && attributes.money > 20 && is996Warrior === false) return '草泥马'; // 暴躁且有点小钱
        if (is996Warrior && money > 50) return '战马'; // 卷赢了
        if (is996Warrior && money < 50) return '牛马'; // 卷输了 (经典牛马)
        if (isResigner && happiness > 60) return '白聋马'; // 潇洒离职
        if (isBigSpender && money < 30) return '爱马仕'; // 精致穷
        if (isGambler && money < 20) return '马卡笼'; // 赌输了
+
+       // --- 黑马判定 ---
+       // 智商高，钱多，但没那么卷（甚至有点低调）
+       if (iq > 85 && money > 70 && !is996Warrior) return '黑马';
 
        // --- 评分主导 ---
        const maxScore = Math.max(curlScore, layScore, socialScore, smartScore);

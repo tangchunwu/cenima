@@ -48,7 +48,7 @@ export const PersonaCard = ({ result }: PersonaCardProps) => {
                                           status={result.rarity || 'Normal'}
                                           avatarUrl={result.image || 'https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=400&q=80'}
                                           showUserInfo={false}
-                                          enableTilt={true}
+                                          enableTilt={false}
                                           enableMobileTilt={false}
                                           showBehindGlow
                                           behindGlowColor={getGlowByResult(result.color)}
@@ -67,12 +67,8 @@ export const PersonaCard = ({ result }: PersonaCardProps) => {
                                           </span>
                                    ))}
                             </div>
-
-                            {/* 底部提示 */}
-                            <div className="text-center text-[10px] text-white/40 pt-2">
-                                   {t('report.tilt_hint') || '移动鼠标体验3D效果'}
-                            </div>
                      </div>
-              </ReportCard>
+              </div>
+              </ReportCard >
        );
 };

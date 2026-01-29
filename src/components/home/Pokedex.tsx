@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Banana, Lock, HelpCircle } from "lucide-react";
+import { Banana, HelpCircle } from "lucide-react";
 import { useCollection } from "@/hooks/useCollection";
 import { tagCombinations } from "@/lib/resultCalculator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { trackEvent, AnalyticsEvents } from "@/lib/analytics";
 
 export const Pokedex = () => {
@@ -74,14 +74,14 @@ export const Pokedex = () => {
                                                                       }`}
                                                         >
                                                                <div className="flex-1 flex items-center justify-center w-full mb-2">
-                                                                      {isUnlocked ? (
-                                                                             data.image ? (
-                                                                                    <img
-                                                                                           src={data.image}
-                                                                                           alt={data.mainTag}
-                                                                                           className="w-16 h-16 object-contain drop-shadow-lg animate-fade-in"
-                                                                                    />
-                                                                             ) : (
+                                                                       {isUnlocked ? (
+                                                                              data.image ? (
+                                                                                     <OptimizedImage
+                                                                                            src={data.image}
+                                                                                            alt={data.mainTag}
+                                                                                            className="w-16 h-16 object-contain drop-shadow-lg animate-fade-in"
+                                                                                     />
+                                                                              ) : (
                                                                                     <span className="text-4xl animate-bounce-slow">{data.emoji}</span>
                                                                              )
                                                                       ) : (

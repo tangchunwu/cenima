@@ -28,6 +28,16 @@
     --muted: 45 40% 94%;
     --muted-foreground: 240 10% 45%;
 
+    @keyframes shimmer {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .animate-spin-slow {
+      animation: spin 3s linear infinite;
+    }
+
     /* 强调色 - 天空蓝 */
     --accent: 200 90% 75%;
     --accent-foreground: 200 80% 25%;

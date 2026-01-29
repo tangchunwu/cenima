@@ -40,16 +40,17 @@ export const ForbiddenButton = () => {
               <div className="fixed bottom-20 sm:bottom-4 left-4 z-50 animate-pulse-slow group">
                      <Button
                             variant="destructive"
-                            size="sm"
+                            size="lg"
                             onClick={handleSelfDestruct}
-                            className="rounded-full w-10 h-10 p-0 bg-red-900/50 hover:bg-red-600 border border-red-500/30 overflow-hidden transition-all duration-300 sm:group-hover:w-32 sm:group-hover:justify-start"
+                            className="relative overflow-hidden rounded-full px-8 py-6 bg-red-600 hover:bg-red-700 text-white font-black text-lg tracking-widest border-4 border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.6)] hover:shadow-[0_0_40px_rgba(239,68,68,0.9)] hover:scale-105 transition-all duration-300 animate-[bounce_1s_infinite]"
                      >
-                            <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                                   <AlertOctagon className="w-5 h-5 text-red-500 group-hover:text-white transition-colors" />
-                            </div>
-                            <span className="opacity-0 group-hover:opacity-100 whitespace-nowrap text-xs font-bold transition-opacity pl-1">
+                            <span className="relative z-10 flex items-center gap-2">
+                                   <AlertOctagon className="w-6 h-6 animate-spin-slow" />
                                    千万别点
                             </span>
+
+                            {/* 扫光动画 */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
                      </Button>
               </div>
        );

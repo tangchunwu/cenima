@@ -10,7 +10,7 @@ interface WishCardProps {
 
 export const WishCard = ({ content }: WishCardProps) => {
   const [isLitUp, setIsLitUp] = useState(false);
-  const { playClick } = useSound();
+  const { playSFX } = useSound();
 
   return (
     <ReportCard className="text-center bg-slate-50 text-slate-800 border-2 border-emerald-500/30 relative overflow-hidden">
@@ -72,7 +72,7 @@ export const WishCard = ({ content }: WishCardProps) => {
               onClick={(e) => {
                 e.stopPropagation();
                 setIsLitUp(true);
-                playClick();
+                playSFX('click');
                 confetti({
                   particleCount: 60,
                   spread: 70,

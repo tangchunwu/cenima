@@ -5,6 +5,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
+import { getSessionId } from "@/lib/sessionUtils";
 
 const FALLBACK_SUPABASE_URL = "https://huneabopgpnqmuxxakgy.supabase.co";
 const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
@@ -25,10 +26,18 @@ if (!SUPABASE_URL) {
   console.error("Supabase URL missing. Check VITE_SUPABASE_URL.");
 }
 
+// Get session ID for RLS policies - session_id is passed as custom header
+const sessionId = getSessionId();
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
   },
+  global: {
+    headers: {
+      'session-id': sessionId
+    }
+  }
 });

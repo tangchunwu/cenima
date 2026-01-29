@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/runtimeClient";
 import { getSessionId } from "@/lib/sessionUtils";
 import { questions, totalQuestions, Question } from "@/lib/questions";
 import { calculateResult, Answers, TagResult } from "@/lib/resultCalculator";
-import { GameAttributes, mapAttributesToAnswers, determineGameResultTag, analyzeGameResult, ChoiceRecord } from "@/lib/gameResultMapper";
+import { GameAttributes, mapAttributesToAnswers, analyzeGameResult } from "@/lib/gameResultMapper";
+import type { ChoiceRecord } from "@/components/game/LifeEditor";
 
 
 export interface SurveyState {
@@ -180,16 +181,10 @@ export function useSurvey() {
     };
 
     // 3. 计算结果
-    // 这里我们可以选择直接用 mapAttributesToAnswers 生成的答案来计算
-    // 也可以用 determineGameResultTag 直接定死结果，但为了数据流统一，建议还是走 calculateResult
-    // 不过为了确保结果准确匹配我们的游戏逻辑，我们可以手动 override 结果类型
-
     let result = calculateResult(mappedAnswers);
     const forcedMainTag = analyzeGameResult(attributes, choices);
 
     // 强制覆盖主标签，确保结果符合游戏直觉
-    // 注意：subTags 可能还是根据 answers 算的，这可能导致不一致，但也能接受
-    // 或者我们可以修改 calculateResult 允许传入 override
     result = { ...result, mainTag: forcedMainTag };
 
     // 4. 保存到数据库
@@ -206,7 +201,7 @@ export function useSurvey() {
 
     setState(prev => ({
       ...prev,
-      answers: mappedAnswers, // 保存映射后的答案，用于 DataCard 图表计算
+      answers: mappedAnswers,
       openAnswers: openAnswers,
       isComplete: true,
       result,
@@ -223,6 +218,6 @@ export function useSurvey() {
     answerQuestion,
     goBack,
     restart,
-    submitGameData, // 导出新方法
+    submitGameData,
   };
 }

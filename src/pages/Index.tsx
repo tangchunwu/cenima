@@ -344,7 +344,7 @@ const Index = () => {
     return (
       <div className="min-h-screen relative overflow-hidden text-white font-sans flex items-center justify-center">
         {/* 故障背景动画 */}
-        <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-[0.03] pointer-events-none mix-blend-screen" />
+        <div className="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-[0.15] pointer-events-none mix-blend-screen" />
 
         {/* 游戏主界面 */}
         <div className="w-full max-w-lg relative z-10">

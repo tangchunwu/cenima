@@ -7,9 +7,9 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 import { getSessionId } from "@/lib/sessionUtils";
 
-const FALLBACK_SUPABASE_URL = "https://huneabopgpnqmuxxakgy.supabase.co";
+const FALLBACK_SUPABASE_URL = "https://wslrpjnysjcqtltjhkce.supabase.co";
 const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bmVhYm9wZ3BucW11eHhha2d5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2ODE1MzUsImV4cCI6MjA4NDI1NzUzNX0.yqdztZceofDzyJcymVYC_vHNYrLI2B-i7HFUfJqIZWE";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzbHJwam55c2pjcXRsdGpoa2NlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2NTE1MDUsImV4cCI6MjA4NDIyNzUwNX0.Wg-iIO_pa8-_2WBjOm9yitoJ1ZticeXMazZP3Iya7SE";
 
 const SUPABASE_URL =
   (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||

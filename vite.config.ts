@@ -30,6 +30,11 @@ export default defineConfig(({ mode }) => {
     process.env.SUPABASE_PROJECT_ID ||
     "";
 
+  const gaMeasurementId =
+    env.VITE_GA_MEASUREMENT_ID ||
+    process.env.VITE_GA_MEASUREMENT_ID ||
+    "";
+
   return {
     server: {
       host: "::",
@@ -48,6 +53,7 @@ export default defineConfig(({ mode }) => {
       "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(supabaseUrl),
       "import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY": JSON.stringify(supabasePublishableKey),
       "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(supabaseProjectId),
+      "import.meta.env.VITE_GA_MEASUREMENT_ID": JSON.stringify(gaMeasurementId),
     },
   };
 });

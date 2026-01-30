@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ReactGA from "react-ga4";
 
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+// GA Measurement ID - 公开跟踪 ID，可安全存放在代码中
+const GA_MEASUREMENT_ID = "G-YZ85342GQQ";
 
 export const GoogleAnalytics = () => {
        const location = useLocation();

@@ -458,9 +458,9 @@ const Index = () => {
                 onRetest={() => {
                   setRetestCount(prev => prev + 1);
                   setShowReaction(true);
-                  // 重置游戏
+                  // 重置游戏并返回首页
                   handleReset();
-                  setAppState("camp"); // 实际上 handleReset 会设为 home，这里覆盖一下
+                  // handleReset 已经将 appState 设为 home，无需再覆盖
                 }}
               />
             </Suspense>

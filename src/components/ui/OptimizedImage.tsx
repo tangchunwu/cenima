@@ -14,26 +14,62 @@ interface OptimizedImageProps {
 
 // 图片预加载缓存
 const imageCache = new Set<string>();
+const loadingPromises = new Map<string, Promise<void>>();
 
-// 预加载图片
-export const preloadImage = (src: string): Promise<void> => {
+// 预加载图片 - 使用 fetchpriority 和 link preload
+export const preloadImage = (src: string, highPriority = false): Promise<void> => {
   if (imageCache.has(src)) return Promise.resolve();
+  if (loadingPromises.has(src)) return loadingPromises.get(src)!;
   
-  return new Promise((resolve, reject) => {
+  const promise = new Promise<void>((resolve) => {
+    // 对高优先级图片使用 link preload
+    if (highPriority && typeof document !== 'undefined') {
+      const existingLink = document.querySelector(`link[href="${src}"]`);
+      if (!existingLink) {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = src;
+        link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      }
+    }
+    
     const img = new Image();
     img.onload = () => {
       imageCache.add(src);
+      loadingPromises.delete(src);
       resolve();
     };
-    img.onerror = reject;
+    img.onerror = () => {
+      loadingPromises.delete(src);
+      resolve(); // 即使失败也 resolve，避免阻塞
+    };
+    // 设置 fetchpriority
+    if (highPriority) {
+      (img as any).fetchPriority = 'high';
+    }
     img.src = src;
   });
+  
+  loadingPromises.set(src, promise);
+  return promise;
 };
 
-// 批量预加载
-export const preloadImages = (srcs: string[]): Promise<void[]> => {
-  return Promise.all(srcs.map(preloadImage));
+// 批量预加载 - 高优先级立即加载，其余并行
+export const preloadImages = (srcs: string[], priorityCount = 5): Promise<void[]> => {
+  const priority = srcs.slice(0, priorityCount);
+  const rest = srcs.slice(priorityCount);
+  
+  // 立即预加载高优先级图片
+  const priorityPromises = priority.map(src => preloadImage(src, true));
+  const restPromises = rest.map(src => preloadImage(src, false));
+  
+  return Promise.all([...priorityPromises, ...restPromises]);
 };
+
+// 检查图片是否已缓存
+export const isImageCached = (src: string): boolean => imageCache.has(src);
 
 const OptimizedImageComponent = ({
   src,
@@ -136,24 +172,42 @@ const OptimizedImageComponent = ({
 
 export const OptimizedImage = memo(OptimizedImageComponent);
 
-// 用于预加载关键图片的 hook
-export const usePreloadImages = (srcs: string[]) => {
+// 用于预加载关键图片的 hook - 更激进的预加载策略
+export const usePreloadImages = (srcs: string[], immediate = false) => {
   useEffect(() => {
-    const preload = async () => {
-      // 预加载前3张，其余延迟
-      const priority = srcs.slice(0, 3);
-      const rest = srcs.slice(3);
-
-      await preloadImages(priority);
+    if (srcs.length === 0) return;
+    
+    if (immediate) {
+      // 立即预加载所有图片，前8张高优先级
+      preloadImages(srcs, 8);
+    } else {
+      // 分批预加载
+      const preload = async () => {
+        // 立即加载前5张（高优先级）
+        await preloadImages(srcs.slice(0, 5), 5);
+        
+        // 100ms 后加载接下来5张
+        if (srcs.length > 5) {
+          setTimeout(() => {
+            preloadImages(srcs.slice(5, 10), 5);
+          }, 100);
+        }
+        
+        // 300ms 后加载剩余
+        if (srcs.length > 10) {
+          setTimeout(() => {
+            preloadImages(srcs.slice(10), 0);
+          }, 300);
+        }
+      };
       
-      // 延迟加载其余图片
-      if (rest.length > 0) {
-        setTimeout(() => {
-          preloadImages(rest);
-        }, 1000);
-      }
-    };
+      preload();
+    }
+  }, [srcs, immediate]);
+};
 
-    preload();
-  }, [srcs]);
+// 预加载下一批图片（用于游戏中动态预加载）
+export const preloadNextImages = (srcs: string[], startIndex: number, count = 3) => {
+  const toPreload = srcs.slice(startIndex, startIndex + count);
+  toPreload.forEach(src => preloadImage(src, true));
 };

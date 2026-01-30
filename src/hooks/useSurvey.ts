@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/runtimeClient";
 import { getSessionId } from "@/lib/sessionUtils";
 import { questions, totalQuestions, Question } from "@/lib/questions";
-import { calculateResult, Answers, TagResult } from "@/lib/resultCalculator";
+import { calculateResult, Answers, TagResult, getHorseResultByName } from "@/lib/resultCalculator";
 import { GameAttributes, mapAttributesToAnswers, analyzeGameResult } from "@/lib/gameResultMapper";
 import type { ChoiceRecord } from "@/components/game/LifeEditor";
 
@@ -181,11 +181,10 @@ export function useSurvey() {
     };
 
     // 3. 计算结果
-    let result = calculateResult(mappedAnswers);
     const forcedMainTag = analyzeGameResult(attributes, choices);
-
-    // 强制覆盖主标签，确保结果符合游戏直觉
-    result = { ...result, mainTag: forcedMainTag };
+    
+    // 根据游戏分析结果获取完整的马匹信息（包括图片、描述等）
+    const result = getHorseResultByName(forcedMainTag);
 
     // 4. 保存到数据库
     await supabase

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Coins, Brain, Flame, Heart, Calendar, Skull, Play, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { EventCard } from './EventCard';
 import { getRandomEvents, EVENTS_PER_GAME, DECISION_TIME_MS, LifeEvent } from '@/lib/events';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
+import { preloadImages, preloadNextImages } from '@/components/ui/OptimizedImage';
 
 // 用户选择记录
 export interface ChoiceRecord {
@@ -53,9 +54,31 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
        // 初始化事件
        useEffect(() => {
               if (isPlaying && events.length === 0) {
-                     setEvents(getRandomEvents(EVENTS_PER_GAME, language));
+                     const newEvents = getRandomEvents(EVENTS_PER_GAME, language);
+                     setEvents(newEvents);
+                     
+                     // 立即预加载所有事件图片
+                     const allImages = newEvents
+                            .filter(e => e.image)
+                            .map(e => e.image!);
+                     if (allImages.length > 0) {
+                            preloadImages(allImages, 8); // 前8张高优先级
+                     }
               }
        }, [isPlaying, events.length, language]);
+
+       // 动态预加载：当前事件变化时，预加载后续图片
+       useEffect(() => {
+              if (events.length > 0 && currentEventIndex < events.length) {
+                     const upcomingImages = events
+                            .slice(currentEventIndex, currentEventIndex + 4)
+                            .filter(e => e.image)
+                            .map(e => e.image!);
+                     if (upcomingImages.length > 0) {
+                            preloadNextImages(upcomingImages, 0, 4);
+                     }
+              }
+       }, [events, currentEventIndex]);
 
        // 恢复游戏（复活后）
        useEffect(() => {

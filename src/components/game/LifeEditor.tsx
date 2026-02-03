@@ -247,33 +247,31 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
               }, [value]);
 
               return (
-                     <div className="flex items-center gap-2 group relative">
+                     <div className="flex items-center gap-1.5 sm:gap-2 group relative">
                             {/* 图标 + 标签 */}
                             <motion.div
-                                   className={`
-                                          flex items-center gap-1.5 min-w-[72px]
-                                   `}
+                                   className="flex items-center gap-1 sm:gap-1.5 min-w-[56px] sm:min-w-[72px]"
                                    animate={showDiff ? {
                                           scale: [1, 1.1, 1],
                                    } : {}}
                                    transition={{ duration: 0.3 }}
                             >
                                    <div className={`
-                                          w-7 h-7 rounded-lg flex items-center justify-center
+                                          w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center
                                           bg-slate-900 border border-slate-700
                                           ${color} shadow-[0_0_8px_inset] shadow-${color.split('-')[1]}-900/50
                                    `}>
                                           {emoji ? (
-                                                 <span className="text-sm">{emoji}</span>
+                                                 <span className="text-xs sm:text-sm">{emoji}</span>
                                           ) : (
-                                                 <Icon className="w-4 h-4" />
+                                                 <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                           )}
                                    </div>
-                                   <span className={`text-xs font-bold ${color} whitespace-nowrap`}>{label}</span>
+                                   <span className={`text-[10px] sm:text-xs font-bold ${color} whitespace-nowrap hidden xs:inline`}>{label}</span>
                             </motion.div>
 
                             {/* 进度条 */}
-                            <div className="flex-1 relative h-3.5 bg-slate-900/80 rounded border border-slate-700/50 overflow-hidden">
+                            <div className="flex-1 relative h-3 sm:h-3.5 bg-slate-900/80 rounded border border-slate-700/50 overflow-hidden">
                                    {/* Grid Background */}
                                    <div className="absolute inset-0 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzjwqhgYGARAXCAxEA8kBgQA8zMv7Q20R78AAAAASUVORK5CYII=')] opacity-20" />
 
@@ -304,9 +302,9 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                             </div>
 
                             {/* 数值显示 */}
-                            <div className="w-12 text-right relative">
+                            <div className="w-9 sm:w-12 text-right relative">
                                    <motion.span
-                                          className={`font-mono text-sm font-bold ${color} drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]`}
+                                          className={`font-mono text-xs sm:text-sm font-bold ${color} drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]`}
                                           animate={showDiff ? { scale: [1, 1.15, 1] } : {}}
                                           transition={{ duration: 0.3 }}
                                    >
@@ -321,7 +319,7 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                                                         animate={{ opacity: 0, y: -20 }}
                                                         exit={{ opacity: 0 }}
                                                         transition={{ duration: 0.8 }}
-                                                        className={`absolute -top-1 right-0 font-mono text-xs font-bold ${diff > 0 ? 'text-green-400' : 'text-red-400'
+                                                        className={`absolute -top-1 right-0 font-mono text-[10px] sm:text-xs font-bold ${diff > 0 ? 'text-green-400' : 'text-red-400'
                                                                }`}
                                                  >
                                                         {diff > 0 ? `+${diff}` : diff}
@@ -335,7 +333,7 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
 
 
        return (
-              <div className={`w-full max-w-md mx-auto p-4 relative ${isDead ? 'grayscale blur-sm' : ''}`}>
+              <div className={`w-full max-w-md mx-auto p-2 sm:p-4 relative ${isDead ? 'grayscale blur-sm' : ''}`}>
                      {/* 教程/开始界面 */}
                      <AnimatePresence>
                             {!isPlaying && !isDead && !gameWon && !hasRevived && (

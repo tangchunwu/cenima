@@ -223,7 +223,7 @@ const Index = () => {
   // 首页 - 挑衅式设计
   if (appState === "home") {
     return (
-      <div className="min-h-screen relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white">
+      <div className="min-h-screen min-h-[100dvh] relative overflow-hidden text-white font-sans selection:bg-primary selection:text-white safe-area-inset">
         <DynamicSEO />
         <FloatingElements />
         <BackgroundEffect />
@@ -235,7 +235,7 @@ const Index = () => {
           <ForbiddenButton />
         </Suspense>
 
-        <div className="container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-screen relative z-10">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 flex flex-col items-center justify-center min-h-screen min-h-[100dvh] relative z-10">
 
           {/* 如果有挑战信息，显示挑战卡片 */}
           {!hasStarted && inviterInfo ? (
@@ -269,25 +269,25 @@ const Index = () => {
             /* 正常首页逻辑 */
             <>
 
-              {/* 顶部热度标签 */}
-              <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-4 py-2 rounded-full border border-red-500/30 animate-pulse w-max max-w-[90%]">
-                <span className="text-red-400 text-sm font-medium truncate">{t('home.warn_tag')}</span>
+              {/* 顶部热度标签 - 移动端优化 */}
+              <div className="absolute top-4 sm:top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-red-500/30 animate-pulse w-max max-w-[85%] sm:max-w-[90%]">
+                <span className="text-red-400 text-xs sm:text-sm font-medium truncate">{t('home.warn_tag')}</span>
               </div>
 
-              {/* 顶部功能区 - 右上角 */}
-              <div className="absolute top-6 right-6 z-50 flex items-center gap-3">
+              {/* 顶部功能区 - 右上角 移动端优化 */}
+              <div className="absolute top-4 sm:top-6 right-3 sm:right-6 z-50 flex items-center gap-2 sm:gap-3">
                 <SoundToggle />
                 <button
                   onClick={toggleLanguage}
-                  className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-all active:scale-95 text-white"
+                  className="flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-md px-2.5 sm:px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-all active:scale-95 text-white touch-feedback touch-target"
                 >
                   <Globe className="w-4 h-4 text-white/80" />
-                  <span className="text-xs font-bold text-white/90">{t('ui.switch_lang')}</span>
+                  <span className="text-xs font-bold text-white/90 hidden xs:inline">{t('ui.switch_lang')}</span>
                 </button>
               </div>
 
-              {/* 主要内容区域 */}
-              <div className="text-center space-y-8 animate-fade-in w-full max-w-md">
+              {/* 主要内容区域 - 移动端间距优化 */}
+              <div className="text-center space-y-5 sm:space-y-8 animate-fade-in w-full max-w-md px-2 sm:px-0">
                 {/* 主标题 - 轮播挑衅版 */}
                 <TitleCarousel />
 
@@ -301,17 +301,17 @@ const Index = () => {
                   <ParticipantCounter />
                 </div>
 
-                {/* 开始按钮 */}
-                <div className="pt-4 animate-fade-in flex flex-col items-center gap-3" style={{ animationDelay: '0.6s' }}>
+                {/* 开始按钮 - 移动端触摸优化 */}
+                <div className="pt-2 sm:pt-4 animate-fade-in flex flex-col items-center gap-2 sm:gap-3 pb-safe" style={{ animationDelay: '0.6s' }}>
                   <Button
                     onClick={handleStart}
                     size="lg"
-                    className="group relative bg-gradient-to-r from-primary via-coral to-primary hover:from-primary/90 hover:via-coral/90 hover:to-primary/90 text-white px-12 py-8 text-2xl font-bold rounded-2xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 animate-glow w-full"
+                    className="group relative bg-gradient-to-r from-primary via-coral to-primary hover:from-primary/90 hover:via-coral/90 hover:to-primary/90 text-white px-8 sm:px-12 py-6 sm:py-8 text-xl sm:text-2xl font-bold rounded-2xl shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 active:scale-[0.98] animate-glow w-full touch-feedback"
                   >
-                    <span className="flex items-center justify-center gap-3">
-                      <Zap className="w-6 h-6" />
+                    <span className="flex items-center justify-center gap-2 sm:gap-3">
+                      <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
                       {t('home.btn.start')}
-                      <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
                   <p className="text-xs text-red-400/80 font-bold bg-black/20 px-3 py-1 rounded-full border border-red-500/20 animate-pulse">

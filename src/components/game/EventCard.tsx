@@ -96,7 +96,7 @@ export const EventCard = ({
                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
                      animate={{ opacity: 1, scale: 1, y: 0 }}
                      exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                     className="w-full max-w-sm mx-auto relative"
+                     className="w-full max-w-sm mx-auto relative px-2 sm:px-0"
               >
                      {/* 紧迫时刻的红光边缘效果 */}
                      <AnimatePresence>
@@ -163,20 +163,20 @@ export const EventCard = ({
                             } : {}}
                             transition={{ duration: 0.5, repeat: isCritical ? Infinity : 0 }}
                      >
-                            {/* 头部：图片或Emoji */}
-                            <div className="relative overflow-hidden group">
-                                   {event.image ? (
-                                          <div className="w-full h-40 relative overflow-hidden">
-                                                 <OptimizedImage
-                                                        src={event.image}
-                                                        alt={event.title}
-                                                        priority={eventNumber <= 2}
-                                                        className="w-full h-full transition-transform duration-700 group-hover:scale-110"
-                                                 />
-                                                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
-                                                 {/* Glitch Overlay Effect */}
-                                                 <div className="absolute inset-0 bg-red-500/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                          </div>
+                     {/* 头部：图片或Emoji */}
+                     <div className="relative overflow-hidden group">
+                            {event.image ? (
+                                   <div className="w-full h-32 sm:h-40 relative overflow-hidden">
+                                          <OptimizedImage
+                                                 src={event.image}
+                                                 alt={event.title}
+                                                 priority={eventNumber <= 2}
+                                                 className="w-full h-full transition-transform duration-700 group-hover:scale-110"
+                                          />
+                                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
+                                          {/* Glitch Overlay Effect */}
+                                          <div className="absolute inset-0 bg-red-500/10 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                   </div>
                                    ) : (
                                           <div className="p-4 text-center bg-white/5 mx-auto">
                                                  <motion.div
@@ -206,66 +206,66 @@ export const EventCard = ({
                                    </div>
                             </div>
 
-                            {/* 选项 */}
-                            <div className="p-3 space-y-2">
-                                   {/* 选项 A */}
-                                   <motion.button
-                                          onClick={() => handleChoice('A')}
-                                          disabled={isExpired || !!selectedChoice}
-                                          variants={buttonVariants}
-                                          initial="idle"
-                                          whileHover="hover"
-                                          whileTap="tap"
-                                          animate={selectedChoice === 'A' ? 'selected' : 'idle'}
-                                          className={`
-                                                 w-full p-3.5 rounded-xl text-left transition-colors duration-200
-                                                 bg-gradient-to-r from-blue-600/20 to-blue-500/10 
-                                                 border-2 border-blue-500/30 
-                                                 hover:border-blue-400 hover:bg-blue-500/30
-                                                 disabled:opacity-50 disabled:cursor-not-allowed
-                                                 active:bg-blue-500/40
-                                                 ${selectedChoice === 'A' ? 'border-blue-400 bg-blue-500/40 ring-2 ring-blue-400/50' : ''}
-                                          `}
-                                   >
-                                          <div className="flex justify-between items-center gap-2">
-                                                 <span className={`font-bold text-white transition-colors ${selectedChoice === 'A' ? 'text-blue-200' : ''}`}>
-                                                        {t('ui.choice_a')}. {event.optionA.text}
-                                                 </span>
-                                                 <span className="text-xs text-white/60 font-mono whitespace-nowrap">
-                                                        {formatEffects(event.optionA.effects)}
-                                                 </span>
-                                          </div>
-                                   </motion.button>
+                     {/* 选项 - 移动端优化触摸区域 */}
+                     <div className="p-2.5 sm:p-3 space-y-2">
+                            {/* 选项 A */}
+                            <motion.button
+                                   onClick={() => handleChoice('A')}
+                                   disabled={isExpired || !!selectedChoice}
+                                   variants={buttonVariants}
+                                   initial="idle"
+                                   whileHover="hover"
+                                   whileTap="tap"
+                                   animate={selectedChoice === 'A' ? 'selected' : 'idle'}
+                                   className={`
+                                          w-full p-3 sm:p-3.5 rounded-xl text-left transition-colors duration-200 touch-feedback
+                                          bg-gradient-to-r from-blue-600/20 to-blue-500/10 
+                                          border-2 border-blue-500/30 
+                                          hover:border-blue-400 hover:bg-blue-500/30
+                                          disabled:opacity-50 disabled:cursor-not-allowed
+                                          active:bg-blue-500/40
+                                          ${selectedChoice === 'A' ? 'border-blue-400 bg-blue-500/40 ring-2 ring-blue-400/50' : ''}
+                                   `}
+                            >
+                                   <div className="flex justify-between items-center gap-2">
+                                          <span className={`font-bold text-white text-sm sm:text-base transition-colors ${selectedChoice === 'A' ? 'text-blue-200' : ''}`}>
+                                                 {t('ui.choice_a')}. {event.optionA.text}
+                                          </span>
+                                          <span className="text-[10px] sm:text-xs text-white/60 font-mono whitespace-nowrap">
+                                                 {formatEffects(event.optionA.effects)}
+                                          </span>
+                                   </div>
+                            </motion.button>
 
-                                   {/* 选项 B */}
-                                   <motion.button
-                                          onClick={() => handleChoice('B')}
-                                          disabled={isExpired || !!selectedChoice}
-                                          variants={buttonVariants}
-                                          initial="idle"
-                                          whileHover="hover"
-                                          whileTap="tap"
-                                          animate={selectedChoice === 'B' ? 'selected' : 'idle'}
-                                          className={`
-                                                 w-full p-3.5 rounded-xl text-left transition-colors duration-200
-                                                 bg-gradient-to-r from-purple-600/20 to-purple-500/10 
-                                                 border-2 border-purple-500/30 
-                                                 hover:border-purple-400 hover:bg-purple-500/30
-                                                 disabled:opacity-50 disabled:cursor-not-allowed
-                                                 active:bg-purple-500/40
-                                                 ${selectedChoice === 'B' ? 'border-purple-400 bg-purple-500/40 ring-2 ring-purple-400/50' : ''}
-                                          `}
-                                   >
-                                          <div className="flex justify-between items-center gap-2">
-                                                 <span className={`font-bold text-white transition-colors ${selectedChoice === 'B' ? 'text-purple-200' : ''}`}>
-                                                        {t('ui.choice_b')}. {event.optionB.text}
-                                                 </span>
-                                                 <span className="text-xs text-white/60 font-mono whitespace-nowrap">
-                                                        {formatEffects(event.optionB.effects)}
-                                                 </span>
-                                          </div>
-                                   </motion.button>
-                            </div>
+                            {/* 选项 B */}
+                            <motion.button
+                                   onClick={() => handleChoice('B')}
+                                   disabled={isExpired || !!selectedChoice}
+                                   variants={buttonVariants}
+                                   initial="idle"
+                                   whileHover="hover"
+                                   whileTap="tap"
+                                   animate={selectedChoice === 'B' ? 'selected' : 'idle'}
+                                   className={`
+                                          w-full p-3 sm:p-3.5 rounded-xl text-left transition-colors duration-200 touch-feedback
+                                          bg-gradient-to-r from-purple-600/20 to-purple-500/10 
+                                          border-2 border-purple-500/30 
+                                          hover:border-purple-400 hover:bg-purple-500/30
+                                          disabled:opacity-50 disabled:cursor-not-allowed
+                                          active:bg-purple-500/40
+                                          ${selectedChoice === 'B' ? 'border-purple-400 bg-purple-500/40 ring-2 ring-purple-400/50' : ''}
+                                   `}
+                            >
+                                   <div className="flex justify-between items-center gap-2">
+                                          <span className={`font-bold text-white text-sm sm:text-base transition-colors ${selectedChoice === 'B' ? 'text-purple-200' : ''}`}>
+                                                 {t('ui.choice_b')}. {event.optionB.text}
+                                          </span>
+                                          <span className="text-[10px] sm:text-xs text-white/60 font-mono whitespace-nowrap">
+                                                 {formatEffects(event.optionB.effects)}
+                                          </span>
+                                   </div>
+                            </motion.button>
+                     </div>
 
                             {/* 提示 */}
                             <AnimatePresence>

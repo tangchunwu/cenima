@@ -19,8 +19,22 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateTrigger, setGenerateTrigger] = useState(false);
 
-  // 生成挑战链接 - 使用自定义域名避免微信封禁
-  const baseUrl = 'https://shabi.fun';
+  // 生成挑战链接 - 优先使用自定义域名，回退到当前域名
+  // shabi.fun 需要配置为 302 重定向并保留 query string
+  const getShareBaseUrl = () => {
+    // 检测当前是否在 shabi.fun 域名下，如果是则使用它
+    if (window.location.hostname === 'shabi.fun') {
+      return 'https://shabi.fun';
+    }
+    // 检测是否在正式发布域名
+    if (window.location.hostname.includes('lovable.app') || window.location.hostname.includes('cenima')) {
+      return window.location.origin;
+    }
+    // 开发/预览环境使用当前域名
+    return window.location.origin;
+  };
+  
+  const baseUrl = getShareBaseUrl();
   const battleLink = `${baseUrl}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
 
   const shareTexts = [

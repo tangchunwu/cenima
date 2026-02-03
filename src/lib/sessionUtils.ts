@@ -1,4 +1,5 @@
 // Session管理工具 - 用于匿名用户标识
+// 使用加密安全的随机ID来防止会话ID被猜测或枚举
 
 const SESSION_KEY = 'annual_report_session_id';
 
@@ -16,22 +17,25 @@ export function getSessionId(): string {
 }
 
 export function generateSessionId(): string {
-  // 生成格式: ar_时间戳_随机字符串
-  const timestamp = Date.now().toString(36);
-  const randomPart = Math.random().toString(36).substring(2, 10);
-  return `ar_${timestamp}_${randomPart}`;
+  // 使用加密安全的 UUID v4 替代弱随机数
+  // crypto.randomUUID() 生成符合 RFC 4122 的 UUID v4
+  // 提供 122 位随机熵，实际上不可能被猜测或枚举
+  return `ar_${crypto.randomUUID()}`;
 }
 
 export function clearSession(): void {
   localStorage.removeItem(SESSION_KEY);
 }
 
-// 生成分享链接用的短ID
+// 生成分享链接用的短ID - 使用加密安全的随机数
 export function generateShareId(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const array = new Uint8Array(8);
+  crypto.getRandomValues(array);
+  
   let result = '';
   for (let i = 0; i < 8; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars.charAt(array[i] % chars.length);
   }
   return result;
 }

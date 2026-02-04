@@ -1,11 +1,9 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // In Lovable, frontend env vars may come from the runtime environment rather than a repo .env file.
   // Ensure the generated Supabase client always receives a URL/key at build-time.
   const env = loadEnv(mode, process.cwd(), "");
 
@@ -36,6 +34,7 @@ export default defineConfig(({ mode }) => {
     "";
 
   return {
+    base: "./",
     server: {
       host: "::",
       port: 8080,
@@ -43,7 +42,7 @@ export default defineConfig(({ mode }) => {
         overlay: false,
       },
     },
-    plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+    plugins: [react()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -57,4 +56,5 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
 

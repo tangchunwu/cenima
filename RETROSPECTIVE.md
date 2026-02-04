@@ -155,3 +155,41 @@ Phase 3 content update
 ### 新学到的知识 (Learnings)
 - **SPA 路由追踪**：在 React 单页应用中，普通的 GA 脚本无法自动识别路由切换。必须配合 `useEffect` 监听 `useLocation` 的变化来手动发送 pageview 事件。
 - **环境隔离**：通过 `import.meta.env` 灵活控制调试模式和生产模式的配置，是现代前端开发的最佳实践。
+
+## 2026-02-04：项目去 Lovable 化与独立化 (Project Independence)
+
+### 遇到的挑战 (Challenges)
+1. **依赖清理**：Lovable 平台注入了特定的构建插件 (`lovable-tagger`) 和环境变量处理逻辑，这些逻辑耦合在 `vite.config.ts` 中，导致容易出现语法错误。
+2. **SEO 确认**：移除 Lovable 后，需要确保项目的 Meta 信息（如 Open Graph）依然完整且符合项目定位。
+
+### 解决方案 (Solutions)
+1. **彻底解耦**：移除 `package.json` 中的依赖，并重构 `vite.config.ts`，删除了所有与 Lovable 相关的插件和重复配置代码。
+2. **文档重写**：将原本指向 Lovable 平台的 `README.md` 替换为项目专属的技术文档，明确技术栈和本地开发流程。
+3. **SEO 审计**：确认 `index.html` 中已包含自定义的中文 Title、Description 和 OG 标签，未受 Lovable 插件移除的影响。
+
+### 新学到的知识 (Learnings)
+- **Vite 配置管理**：在修改 Vite 配置时，需特别注意 `define` 和 `resolve` 块的层级，避免因复制粘贴导致的配置对象闭合错误。
+- **MVP 过渡**：从 MVP（最小可行性产品）过渡到独立项目时，首要任务是清理“脚手架”遗留的平台特定代码，确立项目的代码主权。
+4. **品牌强化**：生成并集成了“测你马”像素风图标到分享卡片的二维码中心，增强了视觉识别度。
+
+
+
+## 2026-02-04：开源文档标准化 (Documentation for Open Source)
+
+### 遇到的挑战 (Challenges)
+1. **敏感信息隔离**：
+   - **问题**：项目包含 API Key 和特定的环境配置，直接公开可能导致安全风险。
+   - **解决**：
+     - 创建 `.env.example` 模版文件，仅保留变量名，移除所有真实值。
+     - 在 `README.md` 中添加显式的警告，提示用户不要提交 `.env` 文件。
+
+2. **文档专业性**：
+   - **问题**：原 `README.md` 过于简略，缺乏项目背景、特性介绍和详细的运行指南。
+   - **解决**：重写了 `README.md`，加入了：
+     - 徽章 (Badges) 和 封面图引用。
+     - 基于“讽刺现实”和“像素风”的特性描述。
+     - 完整的技术栈列表和安装/配置流程。
+
+### 新学到的知识 (Learnings)
+- **开源规范**：一个标准的开源项目必须包含 `README.md` (说明书)、`LICENSE` (授权协议) 和 `.env.example` (配置模版) 三件套。
+- **文档即营销**：README 是用户了解项目的第一窗口，使用 Emoji 和清晰的排版能显著提升项目的吸引力。

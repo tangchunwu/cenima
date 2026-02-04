@@ -26,14 +26,11 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
     if (window.location.hostname === 'shabi.fun') {
       return 'https://shabi.fun';
     }
-    // 检测是否在正式发布域名
-    if (window.location.hostname.includes('lovable.app') || window.location.hostname.includes('cenima')) {
-      return window.location.origin;
-    }
+
     // 开发/预览环境使用当前域名
     return window.location.origin;
   };
-  
+
   const baseUrl = getShareBaseUrl();
   const battleLink = `${baseUrl}?inviter=${encodeURIComponent(result.mainTag)}&camp=${encodeURIComponent(result.mainTag)}&score=${sessionId.slice(0, 4)}`;
 
@@ -230,6 +227,14 @@ export const ShareCard = ({ result, sessionId }: ShareCardProps) => {
             fgColor={"#000000"}
             level={"M"}
             includeMargin={true}
+            imageSettings={{
+              src: "/images/qr_center.png",
+              x: undefined,
+              y: undefined,
+              height: 24,
+              width: 24,
+              excavate: true,
+            }}
           />
         </div>
         <p className="text-[10px] text-slate-300 mt-2">2026 马生模拟器</p>

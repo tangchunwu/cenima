@@ -1,73 +1,99 @@
-# Welcome to your Lovable project
+# 🐴 马生模拟器 2026 (Job Life Simulator)
 
-## Project info
+> "2026人生重开模拟器，用荒诞选择鉴定你的职场人设。"
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Stack](https://img.shields.io/badge/Stack-React_Vite_Supabase-blue)](https://vitejs.dev/)
 
-## How can I edit this code?
+一个基于 **React**, **Vite**, **Supabase** 和 **Pixel Art** 风格构建的荒诞职场生存模拟器。在这个游戏中，你将扮演一名普通的职场人，通过一系列“致命”的二选一抉择，最终揭示你的职场命运——是进化成“战马”，还是沦为“马卡笼”？
 
-There are several ways of editing your application.
+![Cover](public/og-image.png)
 
-**Use Lovable**
+## ✨ 特性 (Features)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **🕹️ 像素风交互 (Retro Pixel UI)**: 全站采用怀旧 8-bit 视觉风格，配合 CRT 显示器特效。
+- **🎲 荒诞叙事 (Absurdist Storytelling)**: 包含 "带薪拉屎", "AI 觉醒", "股市熔断" 等 50+ 个讽刺现实的随机事件。
+- **📊 四维属性系统 (4-Stats System)**:
+  - 💰 **Money**: 你的存款（通常是负的）
+  - 💇 **Hair**: 你的发量（程序员的核心资产）
+  - 🧠 **IQ**: 你的智商（偶尔由于熬夜而离线）
+  - 😀 **Happiness**: 你的快乐值（摸鱼时最高）
+- **🏆 15+ 种结局鉴定**: 根据你的属性，生成“皇阿马”、“白聋马”、“爱马仕”等专属人设报告。
+- **📱 PWA 支持**: 支持安装到手机，提供原生 App 般的沉浸体验。
+- **🎨 动态分享卡片**: 一键生成带有你专属人设和“测你马”二维码的像素风战绩卡片。
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ 技术栈 (Tech Stack)
 
-**Use your preferred IDE**
+- **Runtime**: [Bun](https://bun.sh) / Node.js
+- **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Language**: TypeScript
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+- **Backend (BaaS)**: [Supabase](https://supabase.com/) (Database, Auth)
+- **State Management**: React Query
+- **Analytics**: Google Analytics 4 (Optional)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 快速开始 (Getting Started)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. 环境准备
 
-Follow these steps:
+确保你的本地已安装 Node.js (v18+) 或 Bun。
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 2. 克隆项目
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+git clone https://github.com/tangchunwu/shabi.git
+cd shabi
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. 安装依赖
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+# 使用 npm
+npm install
+
+# 或者使用 bun (推荐)
+bun install
+```
+
+### 4. 环境变量配置 (⚠️ 重要)
+
+本项目依赖 Supabase 作为后端服务。你需要创建一个 Supabase 项目并获取相应的 API Keys。
+
+复制 `.env.example` 为 `.env`：
+
+```bash
+cp .env.example .env
+```
+
+填入你的配置信息：
+
+```ini
+# Supabase 配置 (必须)
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+VITE_SUPABASE_PROJECT_ID=your-project-id
+
+# Google Analytics (可选)
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# 本地调试地址
+VITE_APP_URL=http://localhost:5173
+```
+
+> **注意**: 切勿将包含真实 Key 的 `.env` 文件提交到代码仓库！
+
+### 5. 启动开发服务器
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+打开浏览器访问 `http://localhost:5173` 即可开始体验。
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🤝 贡献 (Contributing)
 
-**Use GitHub Codespaces**
+欢迎提交 Issue 和 Pull Request！如果你有更有趣的“职场梗”或“事件创意”，请直接在 Issue 中留言，我们会考虑加入到事件库中。
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📄 开源协议 (License)
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+[MIT License](LICENSE)

@@ -20,7 +20,24 @@ export function generateSessionId(): string {
   // 使用加密安全的 UUID v4 替代弱随机数
   // crypto.randomUUID() 生成符合 RFC 4122 的 UUID v4
   // 提供 122 位随机熵，实际上不可能被猜测或枚举
-  return `ar_${crypto.randomUUID()}`;
+  
+  // 兼容性检查：如果 crypto.randomUUID 不可用，使用 fallback 方案
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `ar_${crypto.randomUUID()}`;
+  }
+  
+  // Fallback: 使用 crypto.getRandomValues 生成 UUID v4
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  
+  // 设置 UUID v4 的特定位
+  array[6] = (array[6] & 0x0f) | 0x40; // 版本 4
+  array[8] = (array[8] & 0x3f) | 0x80; // variant 10
+  
+  const hex = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  const uuid = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+  
+  return `ar_${uuid}`;
 }
 
 export function clearSession(): void {

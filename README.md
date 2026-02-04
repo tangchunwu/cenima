@@ -9,10 +9,14 @@
 
 ![Cover](public/og-image.png)
 
+![Cover](public/og-image.png)
+
 ## 🌐 在线体验 (Live Demo)
 
-- **[📱 微信/移动端体验 (Lovable)](https://cenima.lovable.app)**: 推荐！可在微信直接打开，体验最佳。
-- **[💻 网页版预览 (Dev)](http://43041ee0dcc54e09916a60006eb925c6.ap-singapore.myide.io)**: 开发预览版，需要在浏览器中访问。
+| 方式 (Platform) | 入口 (Entry) | 说明 (Note) |
+| :--- | :--- | :--- |
+| **📱 微信 (WeChat)** | ![QR Code](public/images/wechat_qr.png)<br>[点击跳转 (Click to Open)](http://43041ee0dcc54e09916a60006eb925c6.ap-singapore.myide.io) | **推荐！** 请使用微信扫码，或在微信内打开链接体验。 |
+| **💻 网页 (Web)** | [https://cenima.lovable.app](https://cenima.lovable.app) | 浏览器/桌面端访问。 |
 
 ## ✨ 特性 (Features)
 

@@ -7,9 +7,7 @@
 
 一个基于 **React**, **Vite**, **Supabase** 和 **Pixel Art** 风格构建的荒诞职场生存模拟器。在这个游戏中，你将扮演一名普通的职场人，通过一系列“致命”的二选一抉择，最终揭示你的职场命运——是进化成“战马”，还是沦为“马卡笼”？
 
-![Cover](public/og-image.png)
-
-![Cover](public/og-image.png)
+<img src="public/og-image.png" width="600" alt="Cover" />
 
 ## 🌐 在线体验 (Live Demo)
 

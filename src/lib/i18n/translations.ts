@@ -68,6 +68,7 @@ export const translations = {
               'boot.ready': '> 牧场大门已开启。',
               'boot.ask': '请输入你2026年最大的愿望（马神会听到的）：',
               'boot.placeholder': '例如：暴富 / 不加班 / 炒老板鱿鱼...',
+              'boot.submit': '执行',
 
               // Report Common
               'report.top_secret': 'TOP HORSE',
@@ -150,6 +151,7 @@ export const translations = {
               'boot.ready': '> Stable gates open.',
               'boot.ask': 'Enter your biggest wish for 2026:',
               'boot.placeholder': 'e.g. Rich / No Overtime / Fire Boss...',
+              'boot.submit': 'EXEC',
 
               // Report Common
               'report.top_secret': 'TOP HORSE',

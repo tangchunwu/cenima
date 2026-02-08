@@ -125,11 +125,17 @@ export const SystemBootLoader = ({ onBoot }: SystemBootLoaderProps) => {
                                                         autoFocus
                                                         value={command}
                                                         onChange={(e) => setCommand(e.target.value)}
-                                                        className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-white placeholder:text-green-700 uppercase caret-green-500 font-mono"
+                                                        className="flex-1 bg-transparent border-none outline-none text-xl font-bold text-white placeholder:text-green-700 uppercase caret-green-500 font-mono min-w-0"
                                                         placeholder={t('boot.placeholder') || "TYPE COMMAND..."}
                                                         autoComplete="off"
                                                  />
-                                                 <div className="animate-pulse w-3 h-5 bg-green-500/50" />
+                                                 <button
+                                                        type="submit"
+                                                        disabled={!command.trim()}
+                                                        className="flex-shrink-0 px-4 py-2 bg-green-500 text-black font-bold font-mono text-sm uppercase tracking-wider hover:bg-green-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-[0_0_10px_rgba(34,197,94,0.3)] hover:shadow-[0_0_20px_rgba(34,197,94,0.5)]"
+                                                 >
+                                                        {t('boot.submit') || "EXEC"}
+                                                 </button>
                                           </div>
                                    </motion.form>
                             )}

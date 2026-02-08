@@ -9,7 +9,7 @@ export interface LifeEvent {
        description: string;
        emoji: string;
        image?: string;
-       category: 'work' | 'social' | 'life' | 'random';
+       category: 'work' | 'social' | 'life' | 'random' | 'interruption';
        isKey?: boolean; // 关键事件，权重翻倍
        optionA: {
               text: string;
@@ -736,3 +736,69 @@ export function getRandomEvents(count: number, lang: Language = 'zh'): LifeEvent
 // 1分钟游戏，约 12-15 张卡
 export const EVENTS_PER_GAME = 12;
 export const DECISION_TIME_MS = 4000; // 每张卡 4 秒决策时间
+
+// 突发事件库
+export const suddenEventsZh: LifeEvent[] = [
+       {
+              id: 'sudden_crash',
+              title: '服务器崩溃',
+              description: '公司核心服务全线瘫痪，老板命令全员通宵抢修！',
+              emoji: '🔥',
+              category: 'interruption',
+              optionA: { text: '含泪通宵', effects: { health: -10, happiness: -20, hair: -10, money: 10 } },
+              optionB: { text: '含泪通宵', effects: { health: -10, happiness: -20, hair: -10, money: 10 } }, // 只有一种选择
+       },
+       {
+              id: 'sudden_bonus',
+              title: '意外之财',
+              description: '你多年前买的空气币突然暴涨翻倍！',
+              emoji: '💰',
+              category: 'interruption',
+              optionA: { text: '落袋为安', effects: { money: 30, happiness: 20 } },
+              optionB: { text: '落袋为安', effects: { money: 30, happiness: 20 } },
+       },
+       {
+              id: 'sudden_blackout',
+              title: '小区停电',
+              description: '正在写代码/追剧，突然一片漆黑...',
+              emoji: '🕯️',
+              category: 'interruption',
+              optionA: { text: '只好睡觉', effects: { hair: 5, happiness: -5, iq: -5 } },
+              optionB: { text: '只好睡觉', effects: { hair: 5, happiness: -5, iq: -5 } },
+       }
+];
+
+export const suddenEventsEn: LifeEvent[] = [
+       {
+              id: 'sudden_crash',
+              title: 'Server Crash',
+              description: 'Core services are down! Boss orders everyone to fix it overnight.',
+              emoji: '🔥',
+              category: 'interruption',
+              optionA: { text: 'Work Overnight', effects: { health: -10, happiness: -20, hair: -10, money: 10 } },
+              optionB: { text: 'Work Overnight', effects: { health: -10, happiness: -20, hair: -10, money: 10 } },
+       },
+       {
+              id: 'sudden_bonus',
+              title: 'Windfall',
+              description: 'That crypto you bought years ago just pumped!',
+              emoji: '💰',
+              category: 'interruption',
+              optionA: { text: 'Sell Now', effects: { money: 30, happiness: 20 } },
+              optionB: { text: 'Sell Now', effects: { money: 30, happiness: 20 } },
+       },
+       {
+              id: 'sudden_blackout',
+              title: 'Blackout',
+              description: 'Power went out while you were working/chilling...',
+              emoji: '🕯️',
+              category: 'interruption',
+              optionA: { text: 'Sleep Early', effects: { hair: 5, happiness: -5, iq: -5 } },
+              optionB: { text: 'Sleep Early', effects: { hair: 5, happiness: -5, iq: -5 } },
+       }
+];
+
+export function getRandomSuddenEvent(lang: Language = 'zh'): LifeEvent {
+       const source = lang === 'en' ? suddenEventsEn : suddenEventsZh;
+       return source[Math.floor(Math.random() * source.length)];
+}

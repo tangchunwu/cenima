@@ -1,13 +1,21 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import confetti from 'canvas-confetti';
 import { Coins, Brain, Flame, Heart, Calendar, Skull, Play, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { EventCard } from './EventCard';
-import { getRandomEvents, EVENTS_PER_GAME, DECISION_TIME_MS, LifeEvent } from '@/lib/events';
+import { getRandomEvents, getRandomSuddenEvent, EVENTS_PER_GAME, DECISION_TIME_MS, LifeEvent } from '@/lib/events';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 import { preloadImages, preloadNextImages } from '@/components/ui/OptimizedImage';
+
+// 震动辅助函数
+const triggerShake = () => {
+       const body = document.body;
+       body.classList.add('animate-shake');
+       setTimeout(() => body.classList.remove('animate-shake'), 500);
+};
 
 // 用户选择记录
 export interface ChoiceRecord {
@@ -51,12 +59,16 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
        const [currentEventIndex, setCurrentEventIndex] = useState(0);
        const [choices, setChoices] = useState<ChoiceRecord[]>([]);
 
+       // 连击系统状态
+       const [combo, setCombo] = useState(0);
+       const [pendingInterruption, setPendingInterruption] = useState<LifeEvent | null>(null);
+
        // 初始化事件
        useEffect(() => {
               if (isPlaying && events.length === 0) {
                      const newEvents = getRandomEvents(EVENTS_PER_GAME, language);
                      setEvents(newEvents);
-                     
+
                      // 立即预加载所有事件图片
                      const allImages = newEvents
                             .filter(e => e.image)
@@ -95,6 +107,81 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
               }
        }, [regretResolved, isDead, t]);
 
+       // 突发事件触发器
+       useEffect(() => {
+              if (isPlaying && !gameWon && !isDead && currentEventIndex > 2 && currentEventIndex < EVENTS_PER_GAME - 2) {
+                     // 15% 概率触发，且当前没有突发事件
+                     if (!pendingInterruption && Math.random() < 0.15) {
+                            const event = getRandomSuddenEvent(language);
+                            setPendingInterruption(event);
+                            playSound('sudden');
+                     }
+              }
+       }, [currentEventIndex, isPlaying, gameWon, isDead, language, pendingInterruption]);
+
+       const handleInterruptionChoice = () => {
+              if (!pendingInterruption) return;
+
+              const effects = pendingInterruption.optionA.effects;
+              handleVisualEffects(effects);
+
+              setAttributes(prev => {
+                     const next = { ...prev };
+                     if (effects.money) next.money = Math.max(0, Math.min(100, next.money + effects.money));
+                     if (effects.hair) next.hair = Math.max(0, Math.min(100, next.hair + effects.hair));
+                     if (effects.iq) next.iq = Math.max(0, Math.min(100, next.iq + effects.iq));
+                     if (effects.happiness) next.happiness = Math.max(0, Math.min(100, next.happiness + effects.happiness));
+
+                     if (Object.values(next).some(v => v <= 0)) {
+                            handleDeath(next);
+                     }
+                     return next;
+              });
+
+              setPendingInterruption(null);
+              toast.success("突发事件已处理", { icon: "✅" });
+       };
+
+       // 处理视觉特效
+       const handleVisualEffects = (effects: Partial<GameAttributes>) => {
+              // 1. 金币雨：当获得大量金钱时
+              if (effects.money && effects.money >= 15) {
+                     const scalar = 2;
+                     const moneyIcon = confetti.shapeFromText({ text: '💰', scalar });
+
+                     confetti({
+                            shapes: [moneyIcon],
+                            scalar,
+                            particleCount: 15,
+                            spread: 60,
+                            origin: { y: 0.3 }, // 从上方掉落
+                            gravity: 2,
+                            drift: 0,
+                     });
+              }
+
+              // 2. 暴击彩带：当快乐值增加 > 15
+              if (effects.happiness && effects.happiness >= 15) {
+                     confetti({
+                            particleCount: 60,
+                            spread: 70,
+                            origin: { y: 0.6 },
+                            colors: ['#FF69B4', '#FFD700', '#00BFFF']
+                     });
+              }
+
+              // 3. 屏幕震动：当任意属性减少 > 20 (重击)
+              const hasHeavyDamage = Object.values(effects).some(v => v !== undefined && v <= -20);
+              if (hasHeavyDamage) {
+                     triggerShake();
+                     // 红色闪屏效果
+                     const flash = document.createElement('div');
+                     flash.className = 'fixed inset-0 bg-red-500/20 z-[9999] pointer-events-none animate-flash';
+                     document.body.appendChild(flash);
+                     setTimeout(() => flash.remove(), 300);
+              }
+       };
+
        // 处理选择
        const handleChoice = useCallback((choice: 'A' | 'B') => {
               const currentEvent = events[currentEventIndex];
@@ -118,7 +205,29 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
 
               // 应用效果
               const effects = choice === 'A' ? currentEvent.optionA.effects : currentEvent.optionB.effects;
-              // 保存前一次属性值用于动画
+
+              // 触发视觉特效
+              // 触发视觉特效
+              handleVisualEffects(effects);
+
+              // 连击判定：只有当发量减少时才算"卷"
+              if (effects.hair && effects.hair < 0) {
+                     setCombo(prev => {
+                            const newCombo = prev + 1;
+                            if (newCombo >= 3) {
+                                   playSound('combo');
+                                   toast.success(`🔥 卷王附体！连击 x${newCombo}`, {
+                                          duration: 2000,
+                                          style: { background: '#F97316', color: 'white', fontWeight: 'bold' }
+                                   });
+                            }
+                            return newCombo;
+                     });
+              } else {
+                     setCombo(0);
+              }
+
+              // 保存前一次属性值用于动画             // 保存前一次属性值用于动画
               setPrevAttributes({ ...attributes });
               setAttributes(prev => {
                      const next = { ...prev };
@@ -126,6 +235,8 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                      if (effects.hair) next.hair = Math.max(0, Math.min(100, next.hair + effects.hair));
                      if (effects.iq) next.iq = Math.max(0, Math.min(100, next.iq + effects.iq));
                      if (effects.happiness) next.happiness = Math.max(0, Math.min(100, next.happiness + effects.happiness));
+
+                     // ... (rest of logic)
 
                      // 检查死亡
                      if (Object.values(next).some(v => v <= 0)) {
@@ -189,42 +300,97 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
               setTimeout(() => {
                      onTriggerWish(attributes, choices);
               }, 1000);
-       };
+       }, [t, onTriggerWish, attributes, choices]);
+       // -----------------------------------------------------------------------------
+       // 音频系统 (Audio System) - 修复 iOS 兼容性
+       // -----------------------------------------------------------------------------
+       const audioContextRef = useMemo(() => {
+              // 仅在客户端且组件挂载后创建
+              if (typeof window === 'undefined') return null;
+              const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+              return AudioContext ? new AudioContext() : null;
+       }, []);
+
+       // 解锁音频上下文 (针对 iOS Safari)
+       const unlockAudio = useCallback(() => {
+              if (audioContextRef && audioContextRef.state === 'suspended') {
+                     audioContextRef.resume();
+              }
+       }, [audioContextRef]);
+
+       // 监听用户交互以解锁音频
+       useEffect(() => {
+              const handleInteraction = () => {
+                     unlockAudio();
+                     window.removeEventListener('click', handleInteraction);
+                     window.removeEventListener('touchstart', handleInteraction);
+                     window.removeEventListener('keydown', handleInteraction);
+              };
+
+              window.addEventListener('click', handleInteraction);
+              window.addEventListener('touchstart', handleInteraction);
+              window.addEventListener('keydown', handleInteraction);
+
+              return () => {
+                     window.removeEventListener('click', handleInteraction);
+                     window.removeEventListener('touchstart', handleInteraction);
+                     window.removeEventListener('keydown', handleInteraction);
+              };
+       }, [unlockAudio]);
+
        // 音效播放工具函数
-       const playSound = (type: 'gain' | 'loss') => {
+       const playSound = useCallback((type: 'gain' | 'loss' | 'combo' | 'sudden') => {
+              if (!audioContextRef) return;
+
+              // 尝试恢复上下文 (以防万一)
+              if (audioContextRef.state === 'suspended') {
+                     audioContextRef.resume();
+              }
+
               try {
-                     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-                     if (!AudioContext) return;
-
-                     const ctx = new AudioContext();
-                     const oscillator = ctx.createOscillator();
-                     const gainNode = ctx.createGain();
-
-                     oscillator.connect(gainNode);
-                     gainNode.connect(ctx.destination);
+                     const ctx = audioContextRef;
+                     const now = ctx.currentTime;
+                     
+                     // 通用振荡器播放函数
+                     const playTone = (freq: number, type: OscillatorType, startTime: number, duration: number, vol = 0.1) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.type = type;
+                            osc.frequency.setValueAtTime(freq, startTime);
+                            gain.gain.setValueAtTime(vol, startTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.start(startTime);
+                            osc.stop(startTime + duration);
+                     };
 
                      if (type === 'gain') {
-                            // 上升音效：钱入账的叮咚声
-                            oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
-                            oscillator.frequency.setValueAtTime(659, ctx.currentTime + 0.1); // E5
-                            oscillator.frequency.setValueAtTime(784, ctx.currentTime + 0.2); // G5
-                            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-                            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                            oscillator.start(ctx.currentTime);
-                            oscillator.stop(ctx.currentTime + 0.3);
-                     } else {
-                            // 下降音效：低沉的警告声
-                            oscillator.frequency.setValueAtTime(294, ctx.currentTime); // D4
-                            oscillator.frequency.setValueAtTime(220, ctx.currentTime + 0.15); // A3
-                            gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-                            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                            oscillator.start(ctx.currentTime);
-                            oscillator.stop(ctx.currentTime + 0.25);
+                            // 大三和弦 (Major Triad)
+                            playTone(523.25, 'sine', now, 0.4); // C5
+                            playTone(659.25, 'sine', now + 0.05, 0.4); // E5
+                            playTone(783.99, 'sine', now + 0.1, 0.4); // G5
+                     } else if (type === 'loss') {
+                            // 减三和弦 (Diminished)
+                            playTone(392.00, 'triangle', now, 0.3); // G4
+                            playTone(369.99, 'triangle', now + 0.05, 0.3); // F#4
+                            playTone(311.13, 'triangle', now + 0.1, 0.3); // Eb4
+                     } else if (type === 'combo') {
+                            // 快速爬升琶音
+                            playTone(440, 'square', now, 0.1, 0.05);
+                            playTone(554, 'square', now + 0.05, 0.1, 0.05);
+                            playTone(659, 'square', now + 0.1, 0.1, 0.05);
+                            playTone(880, 'square', now + 0.15, 0.2, 0.05);
+                     } else if (type === 'sudden') {
+                            // 警报声
+                            playTone(800, 'sawtooth', now, 0.15, 0.1);
+                            playTone(600, 'sawtooth', now + 0.15, 0.15, 0.1);
+                            playTone(800, 'sawtooth', now + 0.3, 0.15, 0.1);
                      }
               } catch (e) {
-                     // 音频播放失败时静默处理
+                     console.error("Audio playback failed:", e);
               }
-       };
+       }, [audioContextRef]);
 
        // 属性栏组件 (HUD Style) - 带中文标签、变化反馈和音效
        const AttributeBar = ({ icon: Icon, label, value, color, barColor, prevValue, emoji }: {
@@ -410,6 +576,41 @@ export const LifeEditor = ({ onComplete, onTriggerRegret, onTriggerWish, regretR
                                    remainingCards={EVENTS_PER_GAME - currentEventIndex - 1}
                             />
                      )}
+
+                     {/* 突发事件模态框 */}
+                     <AnimatePresence>
+                            {pendingInterruption && (
+                                   <motion.div
+                                          initial={{ opacity: 0, scale: 0.8 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          exit={{ opacity: 0, scale: 0.8 }}
+                                          className="absolute inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+                                   >
+                                          <div className="w-full max-w-sm bg-red-900/90 border-4 border-red-500 rounded-xl p-6 text-center shadow-[0_0_50px_rgba(239,68,68,0.5)] relative overflow-hidden">
+                                                 {/* Stripes */}
+                                                 <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.2)_10px,rgba(0,0,0,0.2)_20px)] pointer-events-none" />
+
+                                                 <div className="relative z-10">
+                                                        <div className="text-6xl mb-4 animate-bounce">{pendingInterruption.emoji}</div>
+                                                        <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-widest drop-shadow-md">
+                                                               ⚠️ 突发警报 ⚠️
+                                                        </h3>
+                                                        <h4 className="text-xl font-bold text-red-200 mb-4">{pendingInterruption.title}</h4>
+                                                        <p className="text-white/90 mb-8 font-medium leading-relaxed">
+                                                               {pendingInterruption.description}
+                                                        </p>
+
+                                                        <Button
+                                                               onClick={handleInterruptionChoice}
+                                                               className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-6 text-lg rounded-xl shadow-lg border-t border-red-400"
+                                                        >
+                                                               {pendingInterruption.optionA.text}
+                                                        </Button>
+                                                 </div>
+                                          </div>
+                                   </motion.div>
+                            )}
+                     </AnimatePresence>
 
                      {/* 死亡遮罩 */}
                      {isDead && (
